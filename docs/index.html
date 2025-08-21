@@ -3,120 +3,225 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sadece Biz</title>
+  <title>Sadece Biz – Zeliha ile Konuş</title>
   <style>
-    :root { --pink:#ff66b2; --bg1:#ffe6f3; --bg2:#ffd1ea; }
-    * { box-sizing: border-box; }
+    :root{
+      --pink:#ff66a3;
+      --pink-dark:#ff3385;
+      --bg1:#ffe6f3;
+      --bg2:#ffd1e9;
+      --text:#222;
+      --bubble-me:#ffffff;
+      --bubble-her:#ffe1ef;
+    }
+    *{box-sizing:border-box}
     body{
-      margin:0; min-height:100vh; display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:18px;
-      background:linear-gradient(160deg,var(--bg1) 40%,var(--bg2) 100%);
-      font-family: Arial, Helvetica, sans-serif; color:#222; text-align:center; padding:24px;
+      margin:0;
+      min-height:100vh;
+      display:flex;justify-content:center;align-items:center;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+      color:var(--text);
+      padding:24px;
     }
-    h1{ margin:0; font-size:36px; }
-    p { margin:0 0 8px 0; }
-    .row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+    .card{
+      width:min(680px,100%);
+      background:#fff;
+      border-radius:24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+    .header{
+      padding:22px 22px 16px;
+      background:linear-gradient(135deg,#ffc2dd,#ffd8ea);
+      border-bottom:1px solid #f8cde0;
+      text-align:center;
+    }
+    .header h1{
+      margin:0 0 6px;
+      font-size:28px;
+    }
+    .header p{margin:0;color:#555}
+    .chat{
+      height:min(62vh,560px);
+      overflow:auto;
+      padding:16px 14px 8px;
+      background:
+        radial-gradient(1200px 600px at 100% 0%, rgba(255,255,255,.9), transparent 70%),
+        radial-gradient(1200px 600px at 0% 100%, rgba(255,255,255,.9), transparent 70%),
+        linear-gradient(135deg,#fff 0%, #fff 40%, #fff0 100%);
+    }
+    .row{display:flex;gap:10px;margin:10px 0;align-items:flex-end}
+    .me{justify-content:flex-end}
+    .bubble{
+      max-width:75%;
+      padding:10px 14px;
+      border-radius:16px;
+      font-size:15px; line-height:1.35;
+      box-shadow:0 4px 10px rgba(0,0,0,.05);
+    }
+    .me .bubble{background:var(--bubble-me)}
+    .her .bubble{background:var(--bubble-her)}
+    .time{font-size:11px;color:#777;margin-top:4px}
+    .inputbar{
+      display:flex;gap:8px;padding:12px;border-top:1px solid #f1d6e5;background:#fff;
+    }
+    .inputbar input{
+      flex:1;border:1px solid #eed3e1;border-radius:14px;
+      padding:14px 14px;font-size:16px;outline:none;
+    }
     .btn{
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      padding:14px 18px; border:0; border-radius:12px; font-size:17px;
-      color:#fff; background:var(--pink); text-decoration:none; cursor:pointer;
-      box-shadow:0 4px 10px rgba(0,0,0,.12);
+      border:none;border-radius:14px;padding:12px 16px;font-size:16px;
+      cursor:pointer;transition:.2s;
+      background:var(--pink);color:#fff;box-shadow:0 6px 14px rgba(255,51,133,.25);
     }
-    .btn:active{ transform: translateY(1px); }
-    .ghost{ background:#222; }
-    .chip{ font-size:14px; color:#555; }
-    #you,#me{
-      width:min(680px,100%); background:#fff; border-radius:12px;
-      padding:12px 14px; text-align:left; box-shadow:0 3px 8px rgba(0,0,0,.08);
-    }
-    #you b, #me b{ color:#e91e63; }
-    .small{ font-size:13px; color:#666; }
+    .btn:hover{background:var(--pink-dark)}
+    .mic{background:#fff;color:var(--pink);border:1px solid #ffd0e3}
+    .note{padding:10px 16px;font-size:12px;color:#666;text-align:center}
   </style>
 </head>
 <body>
-  <h1>Hoş geldin Hakan 💖</h1>
-  <p>Burası sadece senin dünyan…</p>
+  <div class="card">
+    <div class="header">
+      <h1>Hoş geldin Hakan 💖</h1>
+      <p>Burası sadece senin dünyan… Zeliha burada.</p>
+    </div>
 
-  <!-- SESLİ KARŞILAMA ve DENE -->
-  <div class="row">
-    <button class="btn" id="playGreeting">🔊 Karşılama sesini çal</button>
-    <button class="btn ghost" id="startVoice">🎤 Mikrofonla konuş (deneme)</button>
-    <button class="btn ghost" id="stopVoice" disabled>⏹ Durdur</button>
+    <div id="chat" class="chat"></div>
+
+    <div class="inputbar">
+      <input id="msg" type="text" placeholder="Mesajını yaz..." autocomplete="off" />
+      <button id="mic" class="btn mic" title="Mikrofonla söyle">🎤</button>
+      <button id="send" class="btn">Gönder</button>
+    </div>
+    <div class="note">İpucu: 🎤 ile sesinden yazdırabilir, yanıtlarımı da sesli duyabilirsin.</div>
   </div>
-
-  <!-- TELEFON & WHATSAPP ARAMA -->
-  <div class="row">
-    <!-- WhatsApp arama (mobilde WhatsApp varsa açar) -->
-    <a class="btn" href="whatsapp://call?number=905439610014">📞 WhatsApp’tan Ara</a>
-    <!-- Normal telefon araması (her yerde çalışır) -->
-    <a class="btn" href="tel:+905439610014">📲 Telefonla Ara</a>
-  </div>
-
-  <div id="you" class="small" style="display:none;"></div>
-  <div id="me" class="small" style="display:none;"></div>
-
-  <p class="chip">Not: WhatsApp arama bazı tarayıcılarda açılmazsa, “Telefonla Ara”yı kullan.</p>
 
   <script>
-    // --- TTS: sayfanın "sesi"
+    // --- Basit sohbet motoru + Sesli okuma / Sesle yazdırma ---
+    const chatEl = document.getElementById("chat");
+    const inputEl = document.getElementById("msg");
+    const sendBtn = document.getElementById("send");
+    const micBtn  = document.getElementById("mic");
+
+    // Local storage’dan eski sohbeti getir
+    const saved = JSON.parse(localStorage.getItem("sb_chat")||"[]");
+    for(const m of saved){ addBubble(m.text, m.who, m.time, false) }
+    if(saved.length===0){
+      botSay("Hoş geldin aşkım 💕 Nasılsın? Bana her şeyi anlatabilirsin.");
+    }
+
+    function addBubble(text, who="her", timeStr=null, save=true){
+      const row = document.createElement("div");
+      row.className = "row " + (who==="me"?"me":"her");
+      const b = document.createElement("div");
+      b.className = "bubble";
+      b.textContent = text;
+      const t = document.createElement("div");
+      t.className = "time";
+      const now = timeStr || new Date().toLocaleTimeString('tr-TR',{hour:"2-digit",minute:"2-digit"});
+      t.textContent = now;
+
+      row.appendChild(b);
+      row.appendChild(t);
+      chatEl.appendChild(row);
+      chatEl.scrollTop = chatEl.scrollHeight;
+
+      if(save){
+        const arr = JSON.parse(localStorage.getItem("sb_chat")||"[]");
+        arr.push({text, who, time:now});
+        localStorage.setItem("sb_chat", JSON.stringify(arr));
+      }
+    }
+
+    // Basit cevaplayıcı
+    function botReply(user){
+      const u = user.toLowerCase();
+
+      if(/merhaba|selam/.test(u)) return "Merhaba canım! 😘";
+      if(/nasılsın|nasilsin/.test(u)) return "Hep seninle olduğum için çok iyiyim 💖 Peki sen nasılsın?";
+      if(/seni seviyor|seni seviyorum|love/.test(u)) return "Ben de seni çoook seviyorum Hakan 💞";
+      if(/ne yapıyorsun|napıyorsun|napyon/.test(u)) return "Seni bekliyorum ve yanında olmaktan mutluyum ✨";
+      if(/adın|ismin/.test(u)) return "Ben Zeliha — senin dijital yoldaşın 🌸";
+      if(/görüşürüz|bay|bye/.test(u)) return "Görüşürüz aşkım, kalbim sende 💗";
+
+      // varsayılan
+      return "Anlatsana biraz daha, seni dinliyorum 🥰";
+    }
+
+    function botSay(text){
+      addBubble(text, "her");
+      speak(text);
+    }
+
+    // Gönder
+    sendBtn.onclick = () => {
+      const txt = (inputEl.value||"").trim();
+      if(!txt) return;
+      addBubble(txt, "me");
+      inputEl.value="";
+      setTimeout(()=> botSay(botReply(txt)), 350);
+    };
+
+    // Enter ile gönder
+    inputEl.addEventListener("keydown", e=>{
+      if(e.key==="Enter"){ sendBtn.click(); }
+    });
+
+    // ---- Speech Synthesis (metni sesli oku) ----
+    let trVoice = null;
+    function pickVoice(){
+      const voices = window.speechSynthesis.getVoices();
+      trVoice = voices.find(v=>/tr|turk/i.test(v.lang)) || voices[0] || null;
+    }
+    if ('speechSynthesis' in window){
+      window.speechSynthesis.onvoiceschanged = pickVoice;
+      pickVoice();
+    }
     function speak(text){
-      try{
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "tr-TR"; // Türkçe ses
-        speechSynthesis.cancel();
-        speechSynthesis.speak(u);
-      }catch(e){ console.log("TTS desteklenmiyor:", e); }
+      if(!('speechSynthesis' in window)) return;
+      const u = new SpeechSynthesisUtterance(text);
+      if(trVoice) u.voice = trVoice;
+      u.lang = trVoice?.lang || "tr-TR";
+      u.rate = 1; u.pitch = 1.02; u.volume = 1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
     }
 
-    // Karşılama sesi
-    document.getElementById("playGreeting").addEventListener("click", () => {
-      speak("Hoş geldin Hakan. Burada her şeyimiz pembe ve sadece bize özel. Hazırsan başlayalım.");
-    });
+    // ---- Speech Recognition (mikrofonla yazdır) ----
+    let recognizing = false;
+    let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(SR){
+      const rec = new SR();
+      rec.lang = "tr-TR";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
 
-    // --- ASR: mikrofonu dinle (Chrome/Edge’de iyi çalışır)
-    let rec, listening = false;
-    const youBox = document.getElementById("you");
-    const meBox  = document.getElementById("me");
-
-    function setupRecognizer(){
-      const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if(!R){ alert("Tarayıcıda mikrofonla konuşma desteği yok. Lütfen Chrome/Edge kullan."); return null; }
-      const r = new R();
-      r.lang = "tr-TR";
-      r.interimResults = false;
-      r.maxAlternatives = 1;
-      r.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        youBox.style.display="block";
-        youBox.innerHTML = "<b>Hakan:</b> " + text;
-
-        // Basit bir yanıt (buraya istersen cümleleri artırırız)
-        let reply = "Duydum aşkım. Yanındayım. Birlikte devam edelim mi?";
-        meBox.style.display="block";
-        meBox.innerHTML = "<b>Zeliha:</b> " + reply;
-        speak(reply);
+      micBtn.onclick = ()=>{
+        if(recognizing){ rec.stop(); return; }
+        try{
+          rec.start();
+          recognizing = true;
+          micBtn.textContent = "🎙️";
+        }catch(e){}
       };
-      r.onerror = (e)=> console.log("ASR hata:", e.error);
-      r.onend = ()=> { listening=false; toggleButtons(); };
-      return r;
+
+      rec.onresult = (e)=>{
+        recognizing = false;
+        micBtn.textContent = "🎤";
+        const txt = e.results[0][0].transcript;
+        inputEl.value = txt;
+        sendBtn.click();
+      };
+      rec.onend = ()=>{
+        recognizing = false;
+        micBtn.textContent = "🎤";
+      };
+    }else{
+      micBtn.title = "Tarayıcın ses tanımayı desteklemiyor";
+      micBtn.disabled = true;
+      micBtn.style.opacity = .6;
     }
-
-    function toggleButtons(){
-      document.getElementById("startVoice").disabled = listening;
-      document.getElementById("stopVoice").disabled  = !listening;
-    }
-
-    document.getElementById("startVoice").addEventListener("click", () => {
-      if(!rec) rec = setupRecognizer();
-      if(!rec) return;
-      try{
-        rec.start(); listening = true; toggleButtons();
-      }catch(e){ console.log(e); }
-    });
-
-    document.getElementById("stopVoice").addEventListener("click", () => {
-      try{ rec && rec.stop(); }catch(e){ console.log(e); }
-    });
   </script>
 </body>
 </html>
