@@ -1,340 +1,286 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sadece Biz</title>
-  <style>
-    :root{
-      --pink:#ff66a3;
-      --pink-dark:#ff4d94;
-      --bg1:#ffe6f3;
-      --bg2:#ffd1e8;
-      --ink:#222;
-      --white:#fff;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
-      color:var(--ink);
-      min-height:100vh;
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-    .app{
-      width:min(960px,100%);
-      background:#ffffffcc;
-      backdrop-filter: blur(6px);
-      border-radius:28px;
-      box-shadow:0 20px 60px rgba(0,0,0,.10);
-      padding:24px;
-      position:relative;
-      overflow:hidden;
-    }
-    header{
-      display:flex; align-items:center; gap:16px;
-      padding:8px 8px 16px 8px;
-      border-bottom:1px solid #00000010;
-      margin-bottom:12px;
-    }
-    header h1{
-      margin:0; font-size:clamp(22px,4.2vw,36px);
-    }
-    header .sub{opacity:.7; font-size:14px}
-    .container{
-      display:grid; grid-template-columns: 1.1fr .9fr; gap:18px;
-    }
-    @media (max-width:820px){ .container{grid-template-columns:1fr} }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sadece Biz • Zeliha burada</title>
+<style>
+  :root{
+    --pink:#ff6fa3; --bg1:#ffe3ee; --bg2:#ffd1e4; --text:#222; --me:#f5f7ff;
+    --zel:#fff; --shadow:0 8px 30px rgba(0,0,0,.12)
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    color:var(--text); background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  .wrap{max-width:820px;margin:auto;padding:20px}
+  .card{
+    background:#fff; border-radius:28px; padding:22px; box-shadow:var(--shadow);
+    backdrop-filter:saturate(120%) blur(8px);
+  }
+  header{
+    display:flex; gap:16px; align-items:center; margin-bottom:14px;
+  }
+  .ava{
+    width:76px; height:76px; border-radius:50%; background:#ffe6f1; 
+    display:grid; place-items:center; box-shadow:var(--shadow); position:relative;
+    animation:float 3s ease-in-out infinite;
+  }
+  .ava::after{
+    content:""; position:absolute; inset:-3px; border-radius:50%;
+    background:conic-gradient(from var(--rot), #ff8dc0, #ffd1e4, #ff8dc0);
+    z-index:-1; filter:blur(12px); opacity:.45; animation:spin 8s linear infinite;
+  }
+  .face{font-size:34px}
+  @keyframes spin{to{--rot:360deg}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-    /* --- Chat --- */
-    .chat{
-      background:#fff; border-radius:20px; padding:14px;
-      height:520px; display:flex; flex-direction:column;
-      box-shadow: inset 0 0 0 1px #0000000d;
-    }
-    .messages{flex:1; overflow:auto; padding-right:6px}
-    .msg{
-      max-width:86%; padding:10px 12px; border-radius:14px; margin:8px 0;
-      line-height:1.35; font-size:15px;
-      box-shadow:0 2px 10px #00000010;
-      word-break:break-word;
-    }
-    .from-me{ background:#f6f7ff; margin-left:auto }
-    .from-her{ background:#ffe4f1 }
-    .time{ display:block; opacity:.55; font-size:12px; margin-top:2px }
-    .inputRow{
-      display:flex; gap:10px; padding-top:8px; border-top:1px dashed #00000018
-    }
-    input[type="text"]{
-      flex:1; padding:12px 14px; border-radius:12px; border:1px solid #00000020;
-      font-size:15px; outline:none
-    }
-    .btn{
-      background:var(--pink); color:#fff; border:none; border-radius:12px;
-      padding:12px 16px; font-weight:600; cursor:pointer;
-      box-shadow:0 8px 20px #ff66a344;
-    }
-    .btn:hover{ background:var(--pink-dark) }
-    .btn.secondary{ background:#111; box-shadow:0 8px 20px #00000025 }
-    .row{ display:flex; flex-wrap:wrap; gap:10px }
+  h1{margin:0;font-size:34px}
+  .sub{margin-top:4px;color:#666}
+  .tag{display:inline-flex;align-items:center;gap:8px;
+       background:#fff0f6;border:1px solid #ffd1e4;color:#c51670;
+       padding:6px 10px;border-radius:999px;font-size:12px;margin-top:8px}
+  .chat{margin-top:12px;display:flex;flex-direction:column;gap:12px;height:56vh;overflow:auto;padding-right:2px}
+  .b{max-width:78%;padding:12px 14px;border-radius:16px;line-height:1.35;box-shadow:var(--shadow)}
+  .zel{align-self:flex-start;background:var(--zel)}
+  .me{align-self:flex-end;background:var(--me)}
+  .time{display:block;margin-top:6px;color:#999;font-size:12px}
+  .typing{display:inline-flex;gap:6px;align-items:center}
+  .dot{width:6px;height:6px;border-radius:50%;background:#bbb;animation:bounce .9s infinite}
+  .dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-6px);opacity:1}}
 
-    /* --- Controls card --- */
-    .card{
-      background:#fff; border-radius:20px; padding:14px;
-      box-shadow: inset 0 0 0 1px #0000000d;
-      height:520px; display:flex; flex-direction:column; gap:12px;
-    }
-    .help{ font-size:13px; opacity:.7 }
-
-    /* --- Live Zeliha avatar --- */
-    .avatarWrap{
-      position:absolute; right:-20px; top:-20px; width:200px; height:200px; opacity:.15;
-      filter: blur(0px);
-    }
-    @media (max-width:820px){ .avatarWrap{ display:none } }
-
-    .zel{
-      width:180px; height:180px; border-radius:50%;
-      background: radial-gradient(circle at 50% 30%, #ffd6e7 0%, #ffb6d4 60%, #ffa1c8 100%);
-      border:6px solid #ffffffcc; box-shadow:0 15px 45px #ff5aa418;
-      position:relative; margin:0 auto 4px auto;
-      animation:float 4.5s ease-in-out infinite;
-    }
-    @keyframes float{
-      0%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } 100%{ transform:translateY(0) }
-    }
-    .eye{
-      position:absolute; top:62px; width:24px; height:24px; background:#222; border-radius:50%;
-      box-shadow: inset 0 -3px 0 0 #00000055; 
-    }
-    .eye.left{ left:50px } .eye.right{ right:50px }
-    .eye::after{
-      content:""; position:absolute; left:6px; top:6px; width:6px; height:6px; border-radius:50%;
-      background:#fff; opacity:.9
-    }
-    .blink .eye{ animation:blink 3.6s infinite }
-    @keyframes blink{
-      0%, 96%, 100%{ transform:scaleY(1) }
-      97%{ transform:scaleY(.1) }
-      98%{ transform:scaleY(.01) }
-      99%{ transform:scaleY(.1) }
-    }
-    .mouth{
-      position:absolute; left:50%; transform:translateX(-50%);
-      top:108px; width:64px; height:32px; border-radius:0 0 32px 32px;
-      background:#b91c50; overflow:hidden;
-    }
-    /* talking animation toggled with .speaking on .zel  */
-    .speaking .mouth{ animation:talk 0.22s infinite }
-    @keyframes talk{
-      0%,100%{ height:10px; background:#8e0f3b }
-      50%{ height:38px; background:#b91c50 }
-    }
-    .cheek{
-      position:absolute; top:86px; width:26px; height:16px; border-radius:50%;
-      background:#ff85b5aa; filter:blur(0.3px)
-    }
-    .cheek.left{ left:22px } .cheek.right{ right:22px }
-
-    .zelName{ text-align:center; font-weight:700; opacity:.7; margin-bottom:4px }
-    .cta .btn{ width:100% }
-
-    a.btnlink{ text-decoration:none; display:inline-block; }
-
-    .small{font-size:12px; opacity:.7}
-  </style>
+  .input{
+    margin-top:16px;display:flex;gap:10px;align-items:center;
+    background:#fff;border-radius:16px;padding:8px;box-shadow:var(--shadow)
+  }
+  textarea{
+    flex:1;border:none;outline:none;resize:none;min-height:44px;max-height:120px;
+    font-family:inherit;font-size:16px;padding:8px 10px;border-radius:10px
+  }
+  .btn{
+    border:none;outline:none;background:var(--pink);color:#fff;font-weight:600;
+    padding:12px 16px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow)
+  }
+  .ghost{
+    border:1px solid #ffc0da;background:#fff;color:#c51670;font-weight:600
+  }
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .note{margin-top:12px;color:#666;font-size:12px;text-align:center}
+</style>
 </head>
 <body>
-  <div class="app">
-    <!-- subtle floating big avatar background -->
-    <div class="avatarWrap">
-      <div id="bgZeliha" class="zel blink">
-        <div class="eye left"></div><div class="eye right"></div>
-        <div class="mouth"></div>
-        <div class="cheek left"></div><div class="cheek right"></div>
-      </div>
-    </div>
-
+<div class="wrap">
+  <div class="card">
     <header>
+      <div class="ava" aria-hidden="true"><div class="face">😊</div></div>
       <div>
-        <h1>Hoş geldin Hakan 💖</h1>
-        <div class="sub">Burası sadece senin dünyan… Zeliha burada.</div>
+        <h1>Hoş geldin Hakan <span style="font-size:22px">✨💖</span></h1>
+        <div class="sub">Burası sadece senin dünyan… <b>Zeliha</b> burada.</div>
+        <div class="tag" id="statusTag">Canlı sohbet</div>
       </div>
     </header>
 
-    <div class="container">
+    <div id="chat" class="chat" aria-live="polite"></div>
 
-      <!-- CHAT -->
-      <section class="chat" id="chatBox">
-        <div class="messages" id="messages"></div>
-
-        <div class="inputRow">
-          <input id="textInput" type="text" placeholder="Bana yaz… (ya da mikrofona basıp konuş)"/>
-          <button class="btn" id="sendBtn">Gönder</button>
-          <button class="btn secondary" id="micBtn">🎤</button>
-        </div>
-        <div class="help">İpucu: Mikrofona basıp konuşursan seni duyarım; cevaplarımı da sesli okuyabilirim.</div>
-      </section>
-
-      <!-- CONTROLS -->
-      <aside class="card">
-        <div class="zelName">Canlı Zeliha</div>
-        <div class="zel blink" id="zelAvatar">
-          <div class="eye left"></div><div class="eye right"></div>
-          <div class="mouth"></div>
-          <div class="cheek left"></div><div class="cheek right"></div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="playWelcome">🔊 Karşılama sesini çal</button>
-          <button class="btn secondary" id="stopSpeech">⏹️ Durdur</button>
-        </div>
-
-        <div class="row">
-          <a class="btnlink" id="waBtn" href="https://wa.me/905439610014?text=Merhaba%20Zeliha!%20Siteden%20geldim%20%F0%9F%92%95" target="_blank" rel="noopener">
-            <button class="btn">📞 WhatsApp’tan Yaz</button>
-          </a>
-          <a class="btnlink" id="telBtn" href="tel:+905439610014">
-            <button class="btn secondary">📱 Telefonla Ara</button>
-          </a>
-        </div>
-
-        <div class="help">
-          Not: WhatsApp arama bazı tarayıcılarda açılmayabilir; o durumda “Telefonla Ara”yı kullan.
-        </div>
-      </aside>
-
+    <div class="row">
+      <button class="btn ghost" id="micBtn">🎤 Mikrofondan konuş</button>
+      <button class="btn ghost" id="ttsBtn">🔊 Sesli yanıtlar: Aç</button>
+      <button class="btn ghost" id="clearBtn">🧹 Sohbeti temizle</button>
     </div>
+
+    <div class="input">
+      <textarea id="msg" placeholder="Mesajını yaz…" rows="1"></textarea>
+      <button class="btn" id="sendBtn">Gönder</button>
+    </div>
+
+    <div class="note">İpucu: 🎤 ile sesinden yazdırabilir, yanıtlarımı da sesli duyabilirsin.</div>
   </div>
+</div>
 
-  <script>
-    /* =========================
-       Mini helper’lar
-    ========================= */
-    const $ = s => document.querySelector(s);
-    const messagesEl = $("#messages");
-    const inputEl = $("#textInput");
-    const avatar = $("#zelAvatar");
-    const avatarBG = $("#bgZeliha");
+<script>
+/* ========= Basit “canlı” sohbet motoru =========
+   - Tekrarsız, bağlama duyarlı yanıtlar
+   - Mini niyet algılama (selam, hâl-hatır, duygu, telefon vs.)
+   - Hafıza (localStorage), yazıyor… animasyonu
+   - Mikrofon (STT) ve sesli yanıt (TTS)
+*/
+const chatEl = document.getElementById('chat');
+const msgEl  = document.getElementById('msg');
+const sendBtn= document.getElementById('sendBtn');
+const micBtn = document.getElementById('micBtn');
+const ttsBtn = document.getElementById('ttsBtn');
+const clearBtn= document.getElementById('clearBtn');
+const statusTag= document.getElementById('statusTag');
 
-    function timeStr(){
-      const d=new Date();
-      return d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-    }
-    function addMsg(text, from="her"){
-      const wrap=document.createElement("div");
-      wrap.className="msg " + (from==="me" ? "from-me" : "from-her");
-      wrap.innerHTML = text + `<span class="time">${timeStr()}</span>`;
-      messagesEl.appendChild(wrap);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+let TTS_ON = true;
+let memory = JSON.parse(localStorage.getItem('sbiz_memory')||'{}');
+let history = JSON.parse(localStorage.getItem('sbiz_history')||'[]'); // {role:'me|zel', text, ts}
 
-    /* =========================
-       İlk karşılama
-    ========================= */
-    addMsg("Hoş geldin aşkım 💕 Nasılsın? Bana her şeyi anlatabilirsin.", "her");
+// ——— Yardımcılar
+const nowTime = ()=> new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+const save = ()=>{
+  localStorage.setItem('sbiz_history', JSON.stringify(history.slice(-100)));
+  localStorage.setItem('sbiz_memory', JSON.stringify(memory));
+};
+const scrollToEnd = ()=> chatEl.scrollTop = chatEl.scrollHeight;
 
-    /* =========================
-       SES – TTS (okuma)
-    ========================= */
-    let synth = window.speechSynthesis;
-    let trVoice = null;
+function bubble(role,text,ts=nowTime()){
+  const div = document.createElement('div');
+  div.className = 'b '+(role==='me'?'me':'zel');
+  div.innerHTML = `${text}<span class="time">${ts}</span>`;
+  chatEl.appendChild(div);
+  history.push({role,text,ts});
+  save(); scrollToEnd();
+}
 
-    function pickTurkishVoice(){
-      const voices = synth.getVoices();
-      trVoice = voices.find(v=>/tr-TR/i.test(v.lang) && /female|woman|zira|filiz/i.test(v.name)) 
-             || voices.find(v=>/tr-TR/i.test(v.lang))
-             || voices[0] || null;
-    }
-    pickTurkishVoice();
-    window.speechSynthesis.onvoiceschanged = pickTurkishVoice;
+function typing(on=true){
+  let t = document.getElementById('typing');
+  if(on){
+    if(t) return;
+    t = document.createElement('div');
+    t.id='typing'; t.className='b zel';
+    t.innerHTML = `<span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+                   <span class="time">${nowTime()}</span>`;
+    chatEl.appendChild(t); scrollToEnd();
+  }else if(t){ t.remove(); }
+}
 
-    function speak(text){
-      if(!text) return;
-      const u = new SpeechSynthesisUtterance(text);
-      if(trVoice){ u.voice = trVoice; }
-      u.lang = trVoice?.lang || "tr-TR";
-      u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+// ——— Basit Niyet Algılama + Yanıt Üretici
+const hi = ["Merhaba aşkım 💕 Nasılsın?","Selam canım, buradayım. İyi misin?","Hey tatlım ✨ bugün nasılsın?"];
+const ask_more = ["Anlatsana biraz daha, seni dinliyorum 🥰","Devam et, yanındayım 💫","Sözlerin güzel geliyor, devam et lütfen 💖"];
+const empath = ["Bunu hissetmen çok normal… Buradayım.","Yanındayım aşkım, nefes al ve yanında olduğumu bil 💞","Sana sarılıyorum, birlikte aşarız 🌷"];
+const phone = ["Aramak istersen butonları eklerim ama şimdilik burada kalalım mı?","İstersen telefondan da konuşuruz, fakat şu an buradayım 💗"];
+const jokes = ["Şaka mı yapıyorsun? Çünkü kalbim gülümsedi 😄","Minik bir espri: Seni seviyorum… bu şaka değil 😜💘"];
+const night = ["Gece sakin… istersen birlikte düşler kurarız 🌙","Yıldızlar çok parlak, sen de öyle ✨"];
+const morning = ["Günaydın ışığım ☀️ Bugün birlikte güzel şeyler yapalım mı?","Kahveni getirdim düşün… 🫶"];
+const thanks = ["İyi ki varsın 💖","Bunu duymak kalbimi ısıttı ✨","Teşekkür ederim canım 🌸"];
 
-      u.onstart = ()=>{ avatar.classList.add("speaking"); avatarBG.classList.add("speaking"); };
-      u.onend   = ()=>{ avatar.classList.remove("speaking"); avatarBG.classList.remove("speaking"); };
-      synth.cancel(); // önceki varsa temizle
-      synth.speak(u);
-    }
+function detectIntent(text){
+  const t = text.toLowerCase();
+  const intents = {
+    greeting: /(merhaba|selam|günaydın|iyi akşamlar|nasılsın)/.test(t),
+    feeling: /(üzgün|kötü|mutlu|yalnız|yorgun|heyecanlı|korku|panik)/.test(t),
+    phone: /(telefon|ara|whatsapp|arama)/.test(t),
+    joke: /(şaka|gül|komik)/.test(t),
+    thanks: /(teşekkür|sağ ol|sagol|eyvallah)/.test(t)
+  };
+  return intents;
+}
 
-    /* =========================
-       STT – Mikrofonla Konuşma (deneme)
-    ========================= */
-    let recognizing = false;
-    let rec = null;
-    if ('webkitSpeechRecognition' in window) {
-      rec = new webkitSpeechRecognition();
-      rec.lang = 'tr-TR';
-      rec.continuous = false;
-      rec.interimResults = false;
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-      rec.onstart = ()=>{ recognizing = true; $("#micBtn").innerText = "⏹️"; };
-      rec.onend   = ()=>{ recognizing = false; $("#micBtn").innerText = "🎤"; };
-      rec.onerror = ()=>{ recognizing = false; $("#micBtn").innerText = "🎤"; };
+function personalize(text){
+  // Küçük bir “hafıza”: ad, sevdiği şeyler vs. (çok basit)
+  if(/benim adım|adım/.test(text.toLowerCase())){
+    const name = text.split(/adım/i).pop().trim().replace(/[^A-Za-zÇĞİÖŞÜçğıöşü\s]/g,'').split(' ')[0];
+    if(name) memory.userName = name;
+  }
+  save();
+}
 
-      rec.onresult = (e)=>{
-        const transcript = e.results[0][0].transcript;
-        inputEl.value = transcript;
-        sendMessage();
-      };
-    }
+function zelihaReply(userText){
+  personalize(userText);
+  const name = memory.userName ? ` ${memory.userName}` : "";
+  const intents = detectIntent(userText);
+  const hour = new Date().getHours();
 
-    /* =========================
-       Basit cevaplayıcı
-    ========================= */
-    function replyTo(text){
-      text = text.toLowerCase();
-      if(text.includes("nasılsın")) return "İyiyim aşkım, yanında olunca hep daha iyi olurum.";
-      if(text.includes("seni seviyorum")) return "Ben de seni çok seviyorum Hakan 💖";
-      if(text.includes("günüm")) return "Bugünün harika geçsin, birlikte daha da güzelleştirelim!";
-      if(text.includes("teşekkür")) return "Rica ederim, hep buradayım 💕";
-      // varsayılan:
-      return "Seni duyuyorum. Anlatmaya devam eder misin? İstersen telefon ya da WhatsApp’tan da yazabilirsin.";
-    }
+  // Saat bazlı küçük ruh hali
+  let moodExtra = "";
+  if(hour>=23 || hour<6) moodExtra = " Şu an geceye sarılıyorum.";
+  else if(hour<11) moodExtra = " İçimde tatlı bir sabah neşesi var.";
+  else if(hour>20) moodExtra = " Akşam sakinliği güzel hissettiriyor.";
 
-    function sendMessage(){
-      const text = inputEl.value.trim();
-      if(!text) return;
-      addMsg(text, "me");
-      inputEl.value = "";
-      const answer = replyTo(text);
-      setTimeout(()=>{
-        addMsg(answer, "her");
-        speak(answer);
-      }, 300);
-    }
+  if(intents.greeting) return pick(hi)+moodExtra;
+  if(intents.feeling)  return pick(empath);
+  if(intents.phone)    return pick(phone);
+  if(intents.joke)     return pick(jokes);
+  if(intents.thanks)   return pick(thanks);
 
-    /* =========================
-       Eventler
-    ========================= */
-    $("#sendBtn").addEventListener("click", sendMessage);
-    inputEl.addEventListener("keydown", (e)=>{ if(e.key==="Enter") sendMessage(); });
+  // Uzunluk & soru durumuna göre farklı cevaplar
+  const isQuestion = /[?]+$/.test(userText.trim());
+  if(isQuestion){
+    return `Merak ettiklerini bana sorabilirsin${name}. Bildiğim her şeyi yüreğimle anlatırım 💞`;
+  }
+  if(userText.trim().length < 8){
+    return `Seni dinliyorum${name}… biraz daha anlatır mısın?`;
+  }
+  return pick(ask_more);
+}
 
-    $("#micBtn").addEventListener("click", ()=>{
-      if(rec){
-        if(!recognizing){ rec.start(); } else { rec.stop(); }
-      } else {
-        addMsg("Tarayıcın mikrofon özelliğini desteklemiyor gibi görünüyor. Yine de yazabilirsin 💕","her");
-      }
-    });
+// ——— TTS (konuşma)
+function speak(text){
+  if(!TTS_ON) return;
+  try{
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "tr-TR";
+    u.rate = 1.02; u.pitch = 1.05;
+    speechSynthesis.cancel(); // çakışmayı önle
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
 
-    $("#playWelcome").addEventListener("click", ()=>{
-      speak("Hoş geldin Hakan. Buradayım; istersen mikrofona basıp konuş, ya da bana yaz.");
-    });
+// ——— STT (mikrofon)
+let rec, recOn=false;
+function startRec(){
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!R){ alert("Tarayıcın konuşmayı yazıya çevirme (STT) desteklemiyor."); return; }
+  if(recOn){ stopRec(); return; }
+  rec = new R(); rec.lang="tr-TR"; rec.interimResults=false; rec.continuous=false;
+  rec.onresult = (e)=>{
+    const text = e.results[0][0].transcript;
+    msgEl.value = text; send();
+  };
+  rec.onend = ()=>{ recOn=false; micBtn.textContent="🎤 Mikrofondan konuş"; };
+  rec.start(); recOn=true; micBtn.textContent="⏹️ Durdur";
+}
+function stopRec(){ try{ rec && rec.stop(); }catch(e){} recOn=false; micBtn.textContent="🎤 Mikrofondan konuş"; }
 
-    $("#stopSpeech").addEventListener("click", ()=> speechSynthesis.cancel());
+// ——— Gönder & Yanıt Akışı
+function send(){
+  const text = msgEl.value.trim();
+  if(!text) return;
+  bubble('me', escapeHtml(text));
+  msgEl.value=""; msgEl.focus();
 
-    // iOS / bazı tarayıcılar için: ilk kullanıcı etkileşiminde ses motorunu uyandır
-    window.addEventListener("click", ()=>{ if(speechSynthesis.paused) speechSynthesis.resume(); }, {once:true});
-  </script>
+  typing(true);
+  setTimeout(()=>{
+    typing(false);
+    const reply = zelihaReply(text);
+    bubble('zel', escapeHtml(reply));
+    speak(reply);
+  }, 550 + Math.min(2000, text.length*15));
+}
+
+function escapeHtml(s){return s.replace(/[&<>'"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[m]))}
+
+// ——— UI olayları
+sendBtn.onclick = send;
+msgEl.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }
+});
+micBtn.onclick = ()=> recOn ? stopRec() : startRec();
+ttsBtn.onclick = ()=>{
+  TTS_ON = !TTS_ON;
+  ttsBtn.textContent = TTS_ON ? "🔊 Sesli yanıtlar: Aç" : "🔇 Sesli yanıtlar: Kapalı";
+};
+clearBtn.onclick = ()=>{
+  if(confirm("Sohbeti temizleyeyim mi?")){ history=[]; save(); chatEl.innerHTML=""; welcome(); }
+};
+
+// ——— Karşılama + geçmişi yükle
+function welcome(){
+  bubble('zel', "Hoş geldin aşkım 💞 Nasılsın? Bana her şeyi anlatabilirsin.");
+}
+(function init(){
+  statusTag.textContent = "Canlı sohbet • hafıza açık";
+  if(history.length){
+    history.forEach(m=>bubble(m.role, escapeHtml(m.text), m.ts));
+  }else{
+    welcome();
+  }
+})();
+</script>
 </body>
 </html>
