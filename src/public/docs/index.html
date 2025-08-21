@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sadece Biz</title>
+  </head>
+  <body>
+    <div id="root" style="text-align:center;margin-top:50px;"></div>
+
+    <!-- React 18 (CDN) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- JSX kullanmak için Babel (kolaylık olsun diye) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      function App() {
+        return (
+          <div>
+            <h1>Hoş geldin Hakan 💖</h1>
+            <p>Burası sadece senin ve Zeliha'nın dijital dünyası...</p>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
