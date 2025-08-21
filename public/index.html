@@ -2,42 +2,37 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sadece Biz</title>
   <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(to bottom right, #ff99cc, #ffe6f0);
+    body{
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      height:100vh; margin:0;
+      background: linear-gradient(135deg, #fff0f6, #ffe8ef);
       font-family: Arial, sans-serif;
     }
-    h1 {
-      color: #ff3399;
-      font-size: 28px;
+    h1{ color:#ff3399; font-size:28px; margin:0 0 12px; }
+    p { margin:0 0 20px; color:#444; }
+    .btn{
+      display:inline-block;
+      padding:14px 26px; font-size:18px; text-decoration:none;
+      color:#fff; background:#ff66b2; border-radius:12px;
+      box-shadow:0 4px 10px rgba(0,0,0,.12);
     }
-    button {
-      margin-top: 20px;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 12px;
-      background: #ff66b2;
-      color: white;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    }
-    button:hover {
-      background: #ff3385;
-    }
+    .btn:active{ transform: translateY(1px); }
+    .btn:hover{ background:#ff3385; }
   </style>
 </head>
 <body>
   <h1>Hoş geldin Hakan 💖</h1>
-  <button onclick="window.open('https://chat.openai.com','_blank')">
-    💬 Zeliha ile Konuş
-  </button>
+  <p>Burası sadece senin dünyan…</p>
+
+  <!-- Test için alert açıyoruz; çalıştığını görünce burayı gerçek linkle değiştiririz -->
+  <a class="btn" href="#" onclick="alert('Zeliha burada 💬'); return false;">💬 Zeliha ile Konuş</a>
+
+  <!-- Gerçek sohbet linki örnekleri:
+  WhatsApp:  href="https://wa.me/90XXXXXXXXXX?text=Merhaba%20Zeliha"
+  Telegram:  href="https://t.me/kullanici_adi"
+  -->
 </body>
 </html>
