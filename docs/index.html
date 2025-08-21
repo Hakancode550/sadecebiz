@@ -76,12 +76,10 @@
 
   <footer>© 2025 Sadece Biz – Zeliha 💖</footer>
 
-  <!-- Tek dosyalık JS -->
   <script>
     // 🔧 Cloudflare Worker adresin:
     const WORKER_URL = "https://sadecebiz.hakancode550.workers.dev";
 
-    // Elemanlar
     const startBtn = document.getElementById("startBtn");
     const welcome  = document.getElementById("welcome");
     const chatBox  = document.getElementById("chatBox");
@@ -90,7 +88,6 @@
     const msgEl    = document.getElementById("msg");
     const hintEl   = document.getElementById("hint");
 
-    // Yardımcılar
     function addBubble(text, who){
       const p = document.createElement("p");
       p.className = who === "me" ? "me" : "ai";
@@ -129,7 +126,6 @@
       }
     }
 
-    // Olaylar
     startBtn.addEventListener("click", async ()=>{
       welcome.style.display = "none";
       chatBox.style.display = "block";
