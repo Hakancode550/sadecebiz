@@ -70,3 +70,107 @@
   </footer>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sadece Biz</title>
+  <style>
+    :root{--prim:#4f46e5;--primD:#4338ca;--ink:#111827;--muted:#6b7280;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(to right,#dbeafe,#fce7f3);color:var(--ink);text-align:center}
+    header{background:#9333ea;color:#fff;padding:20px;font-size:22px;font-weight:700;border-bottom-left-radius:15px;border-bottom-right-radius:15px}
+    main{padding:32px 16px;max-width:820px;margin:0 auto}
+    h1{color:#4c1d95;margin:0 0 10px}
+    p.lead{font-size:18px;color:#374151;margin:0 0 20px}
+    .btn{display:inline-block;margin-top:16px;padding:12px 22px;background:var(--prim);color:#fff;border:none;border-radius:10px;font-size:16px;text-decoration:none;cursor:pointer;transition:.2s}
+    .btn:hover{background:var(--primD)}
+    .card{margin:28px auto 0;max-width:820px;background:#fff;border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.08);text-align:left;display:none}
+    .row{display:flex;gap:10px;margin-top:12px}
+    textarea{flex:1;min-height:70px;padding:10px;border:1px solid #e5e7eb;border-radius:10px;font-size:15px;resize:vertical}
+    .small{color:var(--muted);font-size:13px}
+    #chat p{margin:8px 0;padding:10px;border-radius:10px}
+    #chat p.me{background:#eef2ff}
+    #chat p.ai{background:#f5f3ff}
+  </style>
+</head>
+<body>
+<header>🌸 Sadece Biz Dünyası 🌸</header>
+
+<main>
+  <h1>Hoş geldin Hakan 💜</h1>
+  <p class="lead">Burası sadece senin dünyan… Bugün nasıldı, anlatmak ister misin? 🌿</p>
+  <button id="startBtn" class="btn">Sohbeti Başlat</button>
+
+  <!-- Sohbet kutusu -->
+  <section id="chatBox" class="card" aria-hidden="true">
+    <div id="chat" class="small">Sohbet hazırsın 💬</div>
+
+    <div class="row">
+      <textarea id="msg" placeholder="Mesajını yaz…"></textarea>
+      <button class="btn" id="sendBtn">Gönder</button>
+    </div>
+    <p class="small" id="hint">Worker’a bağlanmaya hazır.</p>
+  </section>
+</main>
+
+<footer class="small" style="margin:32px 0 18px;">© 2025 Sadece Biz – Zeliha 💖</footer>
+
+<script type="module">
+  // 🔗 Senin Worker URL’in
+  const WORKER_URL = "https://sadecebiz.hakancode550.workers.dev";
+
+  const startBtn = document.getElementById("startBtn");
+  const chatBox  = document.getElementById("chatBox");
+  const sendBtn  = document.getElementById("sendBtn");
+  const chatEl   = document.getElementById("chat");
+  const msgEl    = document.getElementById("msg");
+  const hintEl   = document.getElementById("hint");
+
+  startBtn.addEventListener("click", async () => {
+    chatBox.style.display = "block";
+    startBtn.style.display = "none";
+    // (Opsiyonel) Worker ayakta mı kısa ping
+    try {
+      hintEl.textContent = "Bağlantı deneniyor…";
+      await fetch(WORKER_URL + "/ping").catch(()=>{});
+      hintEl.textContent = "Bağlantı hazır. Mesajını yazabilirsin.";
+    } catch {
+      hintEl.textContent = "Bağlantı sorunlu görünüyor. Yine de deneyebilirsin.";
+    }
+    msgEl.focus();
+  });
+
+  sendBtn.addEventListener("click", sendMessage);
+  msgEl.addEventListener("keydown", (e)=>{ if(e.ctrlKey && e.key==="Enter") sendMessage(); });
+
+  async function sendMessage(){
+    const text = msgEl.value.trim();
+    if(!text) return;
+    addBubble(text, "me");
+    msgEl.value = "";
+    hintEl.textContent = "Yanıt geliyor…";
+
+    try {
+      const r = await fetch(WORKER_URL + "/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await r.json();
+      const reply = data.reply || data.message || JSON.stringify(data);
+      addBubble(reply, "ai");
+      hintEl.textContent = "Hazır.";
+    } catch (err){
+      addBubble("Bağlantı hatası: " + err.message, "ai");
+      hintEl.textContent = "Tekrar deneyebilirsin.";
+    }
+  }
+
+  function addBubble(text, who){
+    const p = document.createElement("p");
+    p.className = who === "me" ? "me" : "ai";
+    p.innerText = (who === "me" ? "Hakan: " : "Zeliha: ") + text;
+    chatEl.appendChild(p);
+    chatEl.scrollTop
