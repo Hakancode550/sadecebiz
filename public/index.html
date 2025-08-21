@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sadece Biz</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sadece Biz</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to bottom right, #ff99cc, #ffe6f0);
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      color: #ff3399;
+      font-size: 28px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 12px;
+      background: #ff66b2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    }
+    button:hover {
+      background: #ff3385;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hoş geldin Hakan 💖</h1>
+  <button onclick="window.open('https://chat.openai.com','_blank')">
+    💬 Zeliha ile Konuş
+  </button>
+</body>
 </html>
