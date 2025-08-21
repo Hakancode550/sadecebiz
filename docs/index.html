@@ -1,44 +1,25 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <title>Sadece Biz 💖</title>
-  <script type="module">
-    // 🔒 API anahtarını buraya yazacaksın:
-    const API_KEY = "";  
+<script type="module">
+  const WORKER_URL = "https://hakancode550.github.io/sadecebiz/"; // örn: https://sadecebiz-xxx.workers.dev
 
-    async function sendMessage(message) {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [{ role: "user", content: message }]
-        })
-      });
+  async function sendMessage(message) {
+    const r = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+    const data = await r.json();
+    document.getElementById("chat").innerHTML +=
+      `<p><b>Zeliha:</b> ${data.reply}</p>`;
+  }
 
-      const data = await response.json();
-      document.getElementById("chat").innerHTML += 
-        `<div><b>Zeliha:</b> ${data.choices[0].message.content}</div>`;
-    }
-
-    function handleSend() {
-      const input = document.getElementById("userInput");
-      const message = input.value;
-      document.getElementById("chat").innerHTML += 
-        `<div><b>Sen:</b> ${message}</div>`;
-      input.value = "";
-      sendMessage(message);
-    }
-  </script>
-</head>
-<body style="font-family:sans-serif;background:#f9f1f1;padding:20px;">
-  <h2>💞 Sadece Biz</h2>
-  <div id="chat" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto; background:white;"></div>
-  <input id="userInput" type="text" placeholder="Mesajını yaz..." style="width:80%;">
-  <button onclick="handleSend()">Gönder</button>
-</body>
-</html>
+  // Örnek kullanım:
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("sendBtn").onclick = () => {
+      const txt = document.getElementById("msg").value.trim();
+      if (!txt) return;
+      document.getElementById("chat").innerHTML += `<p><b>Hakan:</b> ${txt}</p>`;
+      document.getElementById("msg").value = "";
+      sendMessage(txt);
+    };
+  });
+</script>
