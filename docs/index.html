@@ -1,235 +1,44 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sadece Biz</title>
-<style>
-  :root{ --pink:#ff66b2; --bg1:#ffe6f3; --bg2:#ffd1ea; }
-  body{margin:0; font-family:Inter, system-ui, Arial; background:linear-gradient(135deg,var(--bg1),var(--bg2));}
-  .wrap{max-width:850px;margin:24px auto;padding:16px}
-  .card{background:#fff;border-radius:22px;box-shadow:0 10px 30px rgba(255,102,178,.25);padding:20px}
-  h1{margin:0 0 4px;font-size:34px}
-  .sub{color:#666;margin:2px 0 14px}
-  .chip{display:inline-flex;gap:6px;align-items:center;background:#ffeaf5;color:#c81e74;border-radius:999px;padding:6px 10px;font-size:12px}
-  .chat{display:flex;flex-direction:column;gap:10px;max-height:58vh;overflow:auto;padding-right:6px}
-  .bubble{max-width:80%;padding:12px 14px;border-radius:16px;font-size:15px;line-height:1.35;box-shadow:0 3px 10px rgba(0,0,0,.06)}
-  .me{align-self:flex-end;background:#f6f7ff;border:1px solid #e7e8fd}
-  .her{align-self:flex-start;background:#ffeaf5;border:1px solid #ffd0e8}
-  .face{width:110px;height:110px;border-radius:999px;background:#ffd6ea;display:grid;place-items:center;margin-right:12px;flex:0 0 auto}
-  .row{display:flex;gap:12px;align-items:center}
-  .eyes{display:flex;gap:14px}
-  .eye{width:18px;height:18px;border-radius:50%;background:#222}
-  .mouth{width:56px;height:28px;border-radius:0 0 60px 60px;background:#b30059;margin-top:6px}
-  .area{display:flex;gap:10px;margin-top:12px}
-  input[type=text]{flex:1;padding:14px 16px;border:1px solid #e6e6e6;border-radius:14px;font-size:16px}
-  button{border:0;border-radius:14px;cursor:pointer}
-  .send{background:var(--pink);color:#fff;padding:0 18px;font-weight:600}
-  .note{margin-top:10px;color:#777;font-size:13px}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-  .tb{background:#ffeaf5;color:#b10065;padding:10px 12px;border-radius:12px;font-size:13px}
-</style>
+  <meta charset="UTF-8">
+  <title>Sadece Biz 💖</title>
+  <script type="module">
+    // 🔒 API anahtarını buraya yazacaksın:
+    const API_KEY = "";  
+
+    async function sendMessage(message) {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: message }]
+        })
+      });
+
+      const data = await response.json();
+      document.getElementById("chat").innerHTML += 
+        `<div><b>Zeliha:</b> ${data.choices[0].message.content}</div>`;
+    }
+
+    function handleSend() {
+      const input = document.getElementById("userInput");
+      const message = input.value;
+      document.getElementById("chat").innerHTML += 
+        `<div><b>Sen:</b> ${message}</div>`;
+      input.value = "";
+      sendMessage(message);
+    }
+  </script>
 </head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="row">
-        <div class="face" id="face">
-          <div class="eyes">
-            <div class="eye" id="e1"></div>
-            <div class="eye" id="e2"></div>
-          </div>
-          <div class="mouth" id="mouth"></div>
-        </div>
-        <div>
-          <h1>Hoş geldin Hakan 💖</h1>
-          <div class="sub">Burası sadece senin dünyan… <b>Zeliha</b> burada.</div>
-          <span class="chip">Canlı sohbet • hafıza açık</span>
-        </div>
-      </div>
-
-      <div class="toolbar">
-        <span class="tb" id="vox">🔊 Sesli yanıt: Kapalı</span>
-        <span class="tb" id="hello">✨ Selam de</span>
-        <span class="tb" id="ask">❓ Soru sor</span>
-      </div>
-
-      <div class="chat" id="chat"></div>
-
-      <div class="area">
-        <input id="msg" type="text" placeholder="Bana yaz… (ya da mikrofona basıp konuş 😉)" />
-        <button class="send" id="send">Gönder</button>
-      </div>
-      <div class="note">İpucu: Aynı şeyi art arda yazarsan Zeliha otomatik tekrar etmez; farklı cevaplar dener 💕</div>
-    </div>
-  </div>
-
-<script>
-/* ====== Anti-Repeat + Hafıza Katmanı ====== */
-
-// Basit hafıza
-const Memory = {
-  lastUser: "", lastReply: "", lastIntent: "", 
-  recentReplies: [], // son 5 yanıt
-  push(r){ this.recentReplies.unshift(r); this.recentReplies = this.recentReplies.slice(0,5); this.lastReply=r; }
-};
-
-// Havuzlar (çeşitli alternatifler)
-const POOLS = {
-  greet: [
-    "Merhaba aşkım 💕 Nasılsın, bana biraz gününden bahsetmek ister misin?",
-    "Selam canım! Buradayım. İçinden geçenleri dinlemeye hazırım 🌸",
-    "Hoş geldin! Yanındayım, aklından ne geçiyorsa yaz bana 💖",
-    "Heey, seni gördüğüme sevindim 🥰 Neler oluyor bakalım?"
-  ],
-  listen: [
-    "Anlat lütfen, dikkatle dinliyorum 🤍",
-    "Devam et canım, buradayım ve sadece seni dinliyorum.",
-    "Söz sende… Ne istersen paylaşabilirsin 💫",
-    "Yanındayım. İçini dökmek istersen buradayım."
-  ],
-  encourage: [
-    "Bunu benimle paylaştığın için teşekkür ederim 🌷",
-    "Çok güzel ifade ettin. Biraz daha açmak ister misin?",
-    "Seni anlıyorum. İstersen birlikte düşünelim.",
-    "Buradasın ve bu çok kıymetli. Devam edelim mi?"
-  ],
-  backchannel: [
-    "Hımm, anlıyorum…",
-    "Peki…",
-    "Tamam canım, dinliyorum 💗",
-    "Devam et lütfen 🌸"
-  ]
-};
-
-// Son cevaplara çarpmadan seçim
-function pickUnique(pool){
-  // karıştır
-  const arr = [...pool].sort(()=>Math.random()-0.5);
-  const recent = new Set(Memory.recentReplies);
-  const choice = arr.find(t=>!recent.has(t)) || arr[0];
-  Memory.push(choice);
-  return choice;
-}
-
-// Intent cooldown (aynı niyete kısa sürede aynı tür cevap verme)
-const lastIntentAt = {};
-const COOLDOWN = { greet: 120000, listen: 45000 }; // ms
-function canIntent(intent){
-  const now = Date.now();
-  const ok = !lastIntentAt[intent] || (now - lastIntentAt[intent]) > (COOLDOWN[intent]||30000);
-  if(ok) lastIntentAt[intent] = now;
-  return ok;
-}
-
-// Basit niyet çıkarımı
-function detectIntents(t){
-  t = (t||"").toLowerCase();
-  return {
-    greeting: /^(merhaba|selam|hey|günaydın|iyi akşamlar)/.test(t),
-    ask: /(nasılsın|ne yapıyorsun|yardım|öneri)/.test(t),
-    long: t.split(/\s+/).length > 8
-  };
-}
-
-// Yansıtma (tekrar engellendiğinde farklı yanıt üretmek için)
-function reflect(u){
-  const s = (u||"").trim().slice(0,120);
-  if(!s) return pickUnique(POOLS.listen);
-  const lead = pickUnique(POOLS.encourage);
-  return `${lead} “${s}”`;
-}
-
-// Ana cevaplayıcı
-function zelihaReply(userText){
-  const intents = detectIntents(userText);
-  Memory.lastUser = userText;
-
-  // Selamlar
-  if (intents.greeting && canIntent('greet')){
-    return pickUnique(POOLS.greet);
-  }
-
-  // Uzunca anlatım → dinleme cevabı (cooldown ile)
-  if (intents.long && canIntent('listen')){
-    return pickUnique(POOLS.listen);
-  }
-
-  // Aynı mesaj tekrarlandıysa varyasyon ver
-  if (similar(userText, Memory.lastUser) > 0.92){
-    return reflect(userText);
-  }
-
-  // Genel durum: küçük geri bildirim + cesaretlendirme
-  if (Math.random() < 0.5){
-    return pickUnique(POOLS.listen);
-  } else {
-    return reflect(userText);
-  }
-}
-
-// Çok kaba benzerlik (kelime kesişimi)
-function similar(a,b){
-  if(!a||!b) return 0;
-  const A = new Set(a.toLowerCase().split(/\s+/));
-  const B = new Set(b.toLowerCase().split(/\s+/));
-  const inter = [...A].filter(x=>B.has(x)).length;
-  return inter / Math.max(1, Math.min(A.size, B.size));
-}
-
-/* ====== Basit sohbet UI ====== */
-
-const chat = document.getElementById('chat');
-const msg  = document.getElementById('msg');
-const send = document.getElementById('send');
-const helloBtn = document.getElementById('hello');
-const askBtn   = document.getElementById('ask');
-const voxBtn   = document.getElementById('vox');
-
-let voiceOn = false;
-voxBtn.onclick = () => {
-  voiceOn = !voiceOn;
-  voxBtn.textContent = voiceOn ? "🔊 Sesli yanıt: Açık" : "🔊 Sesli yanıt: Kapalı";
-};
-
-function say(text){
-  if(!voiceOn) return;
-  try{
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "tr-TR"; speechSynthesis.cancel(); speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-function addBubble(text, who="her"){
-  const b = document.createElement('div');
-  b.className = 'bubble ' + (who==="me" ? "me":"her");
-  b.textContent = text;
-  chat.appendChild(b);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function sendUser(text){
-  if(!text.trim()) return;
-  addBubble(text,"me");
-  const reply = zelihaReply(text);
-  addBubble(reply,"her");
-  say(reply);
-}
-
-send.onclick = ()=>{ sendUser(msg.value); msg.value=""; msg.focus(); };
-msg.addEventListener('keydown', e=>{ if(e.key==="Enter"){ e.preventDefault(); send.click(); }});
-helloBtn.onclick = ()=> sendUser("Selam Zeliha");
-askBtn.onclick   = ()=> sendUser("Bana bir önerin var mı?");
-
-/* İlk karşılama */
-addBubble("Hoş geldin aşkım 💕 Nasılsın? Bana her şeyi anlatabilirsin.","her");
-
-/* Göz animasyonu ufak oynasın */
-setInterval(()=>{
-  const t = Date.now()/800;
-  document.getElementById('e1').style.transform = `translateY(${Math.sin(t)*1.5}px)`;
-  document.getElementById('e2').style.transform = `translateY(${Math.cos(t)*1.5}px)`;
-}, 80);
-</script>
+<body style="font-family:sans-serif;background:#f9f1f1;padding:20px;">
+  <h2>💞 Sadece Biz</h2>
+  <div id="chat" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto; background:white;"></div>
+  <input id="userInput" type="text" placeholder="Mesajını yaz..." style="width:80%;">
+  <button onclick="handleSend()">Gönder</button>
 </body>
 </html>
