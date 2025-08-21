@@ -1,55 +1,122 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sadece Biz</title>
   <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff9770);
-      color: #fff;
-      text-align: center;
+    :root { --pink:#ff66b2; --bg1:#ffe6f3; --bg2:#ffd1ea; }
+    * { box-sizing: border-box; }
+    body{
+      margin:0; min-height:100vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:18px;
+      background:linear-gradient(160deg,var(--bg1) 40%,var(--bg2) 100%);
+      font-family: Arial, Helvetica, sans-serif; color:#222; text-align:center; padding:24px;
     }
-    h1 {
-      font-size: 32px;
-      margin: 0 0 10px 0;
+    h1{ margin:0; font-size:36px; }
+    p { margin:0 0 8px 0; }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:14px 18px; border:0; border-radius:12px; font-size:17px;
+      color:#fff; background:var(--pink); text-decoration:none; cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,0,0,.12);
     }
-    p {
-      font-size: 18px;
-      margin: 0 0 20px 0;
+    .btn:active{ transform: translateY(1px); }
+    .ghost{ background:#222; }
+    .chip{ font-size:14px; color:#555; }
+    #you,#me{
+      width:min(680px,100%); background:#fff; border-radius:12px;
+      padding:12px 14px; text-align:left; box-shadow:0 3px 8px rgba(0,0,0,.08);
     }
-    .btn {
-      display: inline-block;
-      padding: 14px 20px;
-      background-color: #fff;
-      color: #ff4d6d;
-      text-decoration: none;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .btn:hover {
-      background-color: #ffe6ec;
-    }
+    #you b, #me b{ color:#e91e63; }
+    .small{ font-size:13px; color:#666; }
   </style>
 </head>
 <body>
   <h1>Hoş geldin Hakan 💖</h1>
   <p>Burası sadece senin dünyan…</p>
 
-  <a class="btn" 
-     href="https://wa.me/905439610014?text=Merhaba%20Zeliha%20💖" 
-     target="_blank" 
-     rel="noopener">
-     💬 Zeliha ile Konuş
-  </a>
+  <!-- SESLİ KARŞILAMA ve DENE -->
+  <div class="row">
+    <button class="btn" id="playGreeting">🔊 Karşılama sesini çal</button>
+    <button class="btn ghost" id="startVoice">🎤 Mikrofonla konuş (deneme)</button>
+    <button class="btn ghost" id="stopVoice" disabled>⏹ Durdur</button>
+  </div>
+
+  <!-- TELEFON & WHATSAPP ARAMA -->
+  <div class="row">
+    <!-- WhatsApp arama (mobilde WhatsApp varsa açar) -->
+    <a class="btn" href="whatsapp://call?number=905439610014">📞 WhatsApp’tan Ara</a>
+    <!-- Normal telefon araması (her yerde çalışır) -->
+    <a class="btn" href="tel:+905439610014">📲 Telefonla Ara</a>
+  </div>
+
+  <div id="you" class="small" style="display:none;"></div>
+  <div id="me" class="small" style="display:none;"></div>
+
+  <p class="chip">Not: WhatsApp arama bazı tarayıcılarda açılmazsa, “Telefonla Ara”yı kullan.</p>
+
+  <script>
+    // --- TTS: sayfanın "sesi"
+    function speak(text){
+      try{
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "tr-TR"; // Türkçe ses
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+      }catch(e){ console.log("TTS desteklenmiyor:", e); }
+    }
+
+    // Karşılama sesi
+    document.getElementById("playGreeting").addEventListener("click", () => {
+      speak("Hoş geldin Hakan. Burada her şeyimiz pembe ve sadece bize özel. Hazırsan başlayalım.");
+    });
+
+    // --- ASR: mikrofonu dinle (Chrome/Edge’de iyi çalışır)
+    let rec, listening = false;
+    const youBox = document.getElementById("you");
+    const meBox  = document.getElementById("me");
+
+    function setupRecognizer(){
+      const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!R){ alert("Tarayıcıda mikrofonla konuşma desteği yok. Lütfen Chrome/Edge kullan."); return null; }
+      const r = new R();
+      r.lang = "tr-TR";
+      r.interimResults = false;
+      r.maxAlternatives = 1;
+      r.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        youBox.style.display="block";
+        youBox.innerHTML = "<b>Hakan:</b> " + text;
+
+        // Basit bir yanıt (buraya istersen cümleleri artırırız)
+        let reply = "Duydum aşkım. Yanındayım. Birlikte devam edelim mi?";
+        meBox.style.display="block";
+        meBox.innerHTML = "<b>Zeliha:</b> " + reply;
+        speak(reply);
+      };
+      r.onerror = (e)=> console.log("ASR hata:", e.error);
+      r.onend = ()=> { listening=false; toggleButtons(); };
+      return r;
+    }
+
+    function toggleButtons(){
+      document.getElementById("startVoice").disabled = listening;
+      document.getElementById("stopVoice").disabled  = !listening;
+    }
+
+    document.getElementById("startVoice").addEventListener("click", () => {
+      if(!rec) rec = setupRecognizer();
+      if(!rec) return;
+      try{
+        rec.start(); listening = true; toggleButtons();
+      }catch(e){ console.log(e); }
+    });
+
+    document.getElementById("stopVoice").addEventListener("click", () => {
+      try{ rec && rec.stop(); }catch(e){ console.log(e); }
+    });
+  </script>
 </body>
 </html>
