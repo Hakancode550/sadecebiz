@@ -2,37 +2,38 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sadece Biz</title>
   <style>
-    body{
-      display:flex; flex-direction:column; justify-content:center; align-items:center;
-      height:100vh; margin:0;
-      background: linear-gradient(135deg, #fff0f6, #ffe8ef);
+    body {
       font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #ff9a9e, #fad0c4);
+      text-align: center;
+      padding: 50px;
     }
-    h1{ color:#ff3399; font-size:28px; margin:0 0 12px; }
-    p { margin:0 0 20px; color:#444; }
-    .btn{
-      display:inline-block;
-      padding:14px 26px; font-size:18px; text-decoration:none;
-      color:#fff; background:#ff66b2; border-radius:12px;
-      box-shadow:0 4px 10px rgba(0,0,0,.12);
+    h1 {
+      color: #333;
     }
-    .btn:active{ transform: translateY(1px); }
-    .btn:hover{ background:#ff3385; }
+    .btn {
+      display: inline-block;
+      padding: 14px 26px;
+      font-size: 18px;
+      color: #fff;
+      background: #ff66b2;
+      border-radius: 10px;
+      text-decoration: none;
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #ff3385;
+    }
   </style>
 </head>
 <body>
   <h1>Hoş geldin Hakan 💖</h1>
-  <p>Burası sadece senin dünyan…</p>
-
-  <!-- Test için alert açıyoruz; çalıştığını görünce burayı gerçek linkle değiştiririz -->
-  <a class="btn" href="#" onclick="alert('Zeliha burada 💬'); return false;">💬 Zeliha ile Konuş</a>
-
-  <!-- Gerçek sohbet linki örnekleri:
-  WhatsApp:  href="https://wa.me/90XXXXXXXXXX?text=Merhaba%20Zeliha"
-  Telegram:  href="https://t.me/kullanici_adi"
-  -->
+  <p>Burası sadece senin dünyan...</p>
+  <a href="config.js" class="btn">Başla</a>
 </body>
 </html>
