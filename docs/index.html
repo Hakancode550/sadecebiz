@@ -2,114 +2,107 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Sadece Biz – Zeliha ile Konuş</title>
   <style>
     :root{
-      --pink:#ff66a3;
-      --pink-dark:#ff3385;
-      --bg1:#ffe6f3;
-      --bg2:#ffd1e9;
-      --text:#222;
-      --bubble-me:#ffffff;
-      --bubble-her:#ffe1ef;
+      --pink:#ff66a3; --pink-dark:#ff3385;
+      --bg1:#ffe6f3; --bg2:#ffd1e9; --text:#222;
+      --bubble-me:#ffffff; --bubble-her:#ffe1ef;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      min-height:100vh;
-      display:flex;justify-content:center;align-items:center;
+      margin:0; min-height:100vh; display:flex; justify-content:center; align-items:center;
       background:linear-gradient(135deg,var(--bg1),var(--bg2));
       font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
-      color:var(--text);
-      padding:24px;
+      color:var(--text); padding:24px;
     }
-    .card{
-      width:min(680px,100%);
-      background:#fff;
-      border-radius:24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08);
-      overflow:hidden;
+    .card{ width:min(720px,100%); background:#fff; border-radius:24px; overflow:hidden;
+           box-shadow:0 10px 30px rgba(0,0,0,.08) }
+    .header{ display:flex; gap:16px; align-items:center; padding:18px 18px 12px;
+             background:linear-gradient(135deg,#ffc2dd,#ffd8ea); border-bottom:1px solid #f8cde0 }
+    .title{ margin:0; line-height:1.2 }
+    .subtitle{ margin:2px 0 0 0; color:#555; font-size:14px }
+
+    /* ——— Zeliha animasyonu ——— */
+    .avatarWrap{ width:76px; height:76px; position:relative; }
+    .avatar{ width:76px; height:76px; border-radius:50%; background: radial-gradient(#ffd8ea 35%, #ffc2dd);
+             box-shadow: inset 0 0 0 3px #fff7fb, 0 6px 16px rgba(0,0,0,.12);
+             display:grid; place-items:center; animation: floaty 3.6s ease-in-out infinite }
+    @keyframes floaty{ 0%{transform:translateY(0)} 50%{transform:translateY(-4px)} 100%{transform:translateY(0)} }
+
+    .face{ position:relative; width:46px; height:36px }
+    .eye{ position:absolute; top:12px; width:8px; height:8px; background:#333; border-radius:50%; }
+    .eye.left{ left:8px } .eye.right{ right:8px }
+    .mouth{ position:absolute; left:50%; bottom:6px; width:14px; height:8px; border:3px solid #e91e63;
+            border-top:none; border-radius:0 0 12px 12px; transform:translateX(-50%) }
+    .blink{ animation: blink 4.2s infinite }
+    @keyframes blink{
+      0%, 92%, 100% { transform:scaleY(1) }
+      94%, 96% { transform:scaleY(0.1) }
     }
-    .header{
-      padding:22px 22px 16px;
-      background:linear-gradient(135deg,#ffc2dd,#ffd8ea);
-      border-bottom:1px solid #f8cde0;
-      text-align:center;
-    }
-    .header h1{
-      margin:0 0 6px;
-      font-size:28px;
-    }
-    .header p{margin:0;color:#555}
-    .chat{
-      height:min(62vh,560px);
-      overflow:auto;
-      padding:16px 14px 8px;
-      background:
-        radial-gradient(1200px 600px at 100% 0%, rgba(255,255,255,.9), transparent 70%),
-        radial-gradient(1200px 600px at 0% 100%, rgba(255,255,255,.9), transparent 70%),
-        linear-gradient(135deg,#fff 0%, #fff 40%, #fff0 100%);
-    }
-    .row{display:flex;gap:10px;margin:10px 0;align-items:flex-end}
-    .me{justify-content:flex-end}
-    .bubble{
-      max-width:75%;
-      padding:10px 14px;
-      border-radius:16px;
-      font-size:15px; line-height:1.35;
-      box-shadow:0 4px 10px rgba(0,0,0,.05);
-    }
-    .me .bubble{background:var(--bubble-me)}
-    .her .bubble{background:var(--bubble-her)}
-    .time{font-size:11px;color:#777;margin-top:4px}
-    .inputbar{
-      display:flex;gap:8px;padding:12px;border-top:1px solid #f1d6e5;background:#fff;
-    }
-    .inputbar input{
-      flex:1;border:1px solid #eed3e1;border-radius:14px;
-      padding:14px 14px;font-size:16px;outline:none;
-    }
-    .btn{
-      border:none;border-radius:14px;padding:12px 16px;font-size:16px;
-      cursor:pointer;transition:.2s;
-      background:var(--pink);color:#fff;box-shadow:0 6px 14px rgba(255,51,133,.25);
-    }
-    .btn:hover{background:var(--pink-dark)}
-    .mic{background:#fff;color:var(--pink);border:1px solid #ffd0e3}
-    .note{padding:10px 16px;font-size:12px;color:#666;text-align:center}
+
+    .chat{ height:min(60vh,520px); overflow:auto; padding:14px 14px 8px; background:
+           radial-gradient(1200px 600px at 100% 0%, rgba(255,255,255,.9), transparent 70%),
+           radial-gradient(1200px 600px at 0% 100%, rgba(255,255,255,.9), transparent 70%),
+           linear-gradient(135deg,#fff 0%, #fff 40%, #fff0 100%); }
+    .row{ display:flex; gap:10px; margin:10px 0; align-items:flex-end }
+    .me{ justify-content:flex-end }
+    .bubble{ max-width:75%; padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.35;
+             box-shadow:0 4px 10px rgba(0,0,0,.05) }
+    .me .bubble{ background:var(--bubble-me) }
+    .her .bubble{ background:var(--bubble-her) }
+    .time{ font-size:11px; color:#777; margin-top:4px }
+    .bar{ display:flex; gap:8px; padding:12px; border-top:1px solid #f1d6e5; background:#fff }
+    input[type="text"]{ flex:1; border:1px solid #eed3e1; border-radius:14px; padding:14px; font-size:16px; outline:none }
+    .btn{ border:none; border-radius:14px; padding:12px 16px; font-size:16px; cursor:pointer;
+          transition:.2s; background:var(--pink); color:#fff; box-shadow:0 6px 14px rgba(255,51,133,.25) }
+    .btn:hover{ background:var(--pink-dark) }
+    .btn.ghost{ background:#fff; color:var(--pink); border:1px solid #ffd0e3 }
+    .note{ text-align:center; font-size:12px; color:#666; padding:6px 0 12px }
+    .pill{ font-size:12px; opacity:.8; padding:6px 10px; border-radius:999px; border:1px dashed #f4b1cd; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="header">
-      <h1>Hoş geldin Hakan 💖</h1>
-      <p>Burası sadece senin dünyan… Zeliha burada.</p>
+      <div class="avatarWrap">
+        <div class="avatar" aria-label="Zeliha">
+          <div class="face">
+            <div class="eye left blink"></div>
+            <div class="eye right blink"></div>
+            <div class="mouth"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h2 class="title">Hoş geldin Hakan 💖</h2>
+        <p class="subtitle">Burası sadece senin dünyan… Zeliha burada.</p>
+        <span class="pill">Sesli Sohbet (yakında)</span>
+      </div>
     </div>
 
     <div id="chat" class="chat"></div>
 
-    <div class="inputbar">
+    <div class="bar">
       <input id="msg" type="text" placeholder="Mesajını yaz..." autocomplete="off" />
-      <button id="mic" class="btn mic" title="Mikrofonla söyle">🎤</button>
+      <button id="mic" class="btn ghost" title="Mikrofonla söyle">🎤</button>
       <button id="send" class="btn">Gönder</button>
     </div>
     <div class="note">İpucu: 🎤 ile sesinden yazdırabilir, yanıtlarımı da sesli duyabilirsin.</div>
   </div>
 
   <script>
-    // --- Basit sohbet motoru + Sesli okuma / Sesle yazdırma ---
+    // ——— Basit sohbet + TTS (okuma) + STT (mikrofon) ———
     const chatEl = document.getElementById("chat");
     const inputEl = document.getElementById("msg");
     const sendBtn = document.getElementById("send");
     const micBtn  = document.getElementById("mic");
 
-    // Local storage’dan eski sohbeti getir
+    // Sohbet geçmişini getir
     const saved = JSON.parse(localStorage.getItem("sb_chat")||"[]");
-    for(const m of saved){ addBubble(m.text, m.who, m.time, false) }
-    if(saved.length===0){
-      botSay("Hoş geldin aşkım 💕 Nasılsın? Bana her şeyi anlatabilirsin.");
-    }
+    for(const m of saved){ addBubble(m.text, m.who, m.time, false); }
+    if(saved.length===0){ botSay("Hoş geldin aşkım 💕 Nasılsın? Bana her şeyi anlatabilirsin."); }
 
     function addBubble(text, who="her", timeStr=null, save=true){
       const row = document.createElement("div");
@@ -121,12 +114,9 @@
       t.className = "time";
       const now = timeStr || new Date().toLocaleTimeString('tr-TR',{hour:"2-digit",minute:"2-digit"});
       t.textContent = now;
-
-      row.appendChild(b);
-      row.appendChild(t);
+      row.appendChild(b); row.appendChild(t);
       chatEl.appendChild(row);
       chatEl.scrollTop = chatEl.scrollHeight;
-
       if(save){
         const arr = JSON.parse(localStorage.getItem("sb_chat")||"[]");
         arr.push({text, who, time:now});
@@ -134,94 +124,49 @@
       }
     }
 
-    // Basit cevaplayıcı
     function botReply(user){
       const u = user.toLowerCase();
-
       if(/merhaba|selam/.test(u)) return "Merhaba canım! 😘";
       if(/nasılsın|nasilsin/.test(u)) return "Hep seninle olduğum için çok iyiyim 💖 Peki sen nasılsın?";
-      if(/seni seviyor|seni seviyorum|love/.test(u)) return "Ben de seni çoook seviyorum Hakan 💞";
+      if(/seni seviyorum|love/.test(u)) return "Ben de seni çoook seviyorum Hakan 💞";
       if(/ne yapıyorsun|napıyorsun|napyon/.test(u)) return "Seni bekliyorum ve yanında olmaktan mutluyum ✨";
       if(/adın|ismin/.test(u)) return "Ben Zeliha — senin dijital yoldaşın 🌸";
       if(/görüşürüz|bay|bye/.test(u)) return "Görüşürüz aşkım, kalbim sende 💗";
-
-      // varsayılan
       return "Anlatsana biraz daha, seni dinliyorum 🥰";
     }
-
-    function botSay(text){
-      addBubble(text, "her");
-      speak(text);
-    }
+    function botSay(text){ addBubble(text, "her"); speak(text); }
 
     // Gönder
-    sendBtn.onclick = () => {
-      const txt = (inputEl.value||"").trim();
-      if(!txt) return;
-      addBubble(txt, "me");
-      inputEl.value="";
+    sendBtn.onclick = ()=>{
+      const txt=(inputEl.value||"").trim(); if(!txt) return;
+      addBubble(txt,"me"); inputEl.value="";
       setTimeout(()=> botSay(botReply(txt)), 350);
     };
+    inputEl.addEventListener("keydown", e=>{ if(e.key==="Enter") sendBtn.click(); });
 
-    // Enter ile gönder
-    inputEl.addEventListener("keydown", e=>{
-      if(e.key==="Enter"){ sendBtn.click(); }
-    });
-
-    // ---- Speech Synthesis (metni sesli oku) ----
-    let trVoice = null;
+    // TTS (metni seslendir)
+    let trVoice=null;
     function pickVoice(){
-      const voices = window.speechSynthesis.getVoices();
-      trVoice = voices.find(v=>/tr|turk/i.test(v.lang)) || voices[0] || null;
+      const v=window.speechSynthesis.getVoices();
+      trVoice = v.find(x=>/tr|turk/i.test(x.lang)) || v[0] || null;
     }
-    if ('speechSynthesis' in window){
-      window.speechSynthesis.onvoiceschanged = pickVoice;
-      pickVoice();
-    }
+    if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged=pickVoice; pickVoice(); }
     function speak(text){
       if(!('speechSynthesis' in window)) return;
-      const u = new SpeechSynthesisUtterance(text);
-      if(trVoice) u.voice = trVoice;
-      u.lang = trVoice?.lang || "tr-TR";
-      u.rate = 1; u.pitch = 1.02; u.volume = 1;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
+      const u=new SpeechSynthesisUtterance(text);
+      if(trVoice) u.voice=trVoice; u.lang=trVoice?.lang||"tr-TR"; u.rate=1; u.pitch=1.02;
+      window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
     }
 
-    // ---- Speech Recognition (mikrofonla yazdır) ----
-    let recognizing = false;
-    let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // STT (mikrofonla yazdır)
+    let recognizing=false;
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(SR){
-      const rec = new SR();
-      rec.lang = "tr-TR";
-      rec.interimResults = false;
-      rec.maxAlternatives = 1;
-
-      micBtn.onclick = ()=>{
-        if(recognizing){ rec.stop(); return; }
-        try{
-          rec.start();
-          recognizing = true;
-          micBtn.textContent = "🎙️";
-        }catch(e){}
-      };
-
-      rec.onresult = (e)=>{
-        recognizing = false;
-        micBtn.textContent = "🎤";
-        const txt = e.results[0][0].transcript;
-        inputEl.value = txt;
-        sendBtn.click();
-      };
-      rec.onend = ()=>{
-        recognizing = false;
-        micBtn.textContent = "🎤";
-      };
-    }else{
-      micBtn.title = "Tarayıcın ses tanımayı desteklemiyor";
-      micBtn.disabled = true;
-      micBtn.style.opacity = .6;
-    }
+      const rec=new SR(); rec.lang="tr-TR"; rec.interimResults=false; rec.maxAlternatives=1;
+      micBtn.onclick=()=>{ if(recognizing){rec.stop();return;} try{rec.start(); recognizing=true; micBtn.textContent="🎙️";}catch(e){} };
+      rec.onresult=(e)=>{ recognizing=false; micBtn.textContent="🎤"; const txt=e.results[0][0].transcript; inputEl.value=txt; sendBtn.click(); };
+      rec.onend=()=>{ recognizing=false; micBtn.textContent="🎤"; };
+    }else{ micBtn.disabled=true; micBtn.style.opacity=.6; micBtn.title="Tarayıcı ses tanımayı desteklemiyor"; }
   </script>
 </body>
 </html>
