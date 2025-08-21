@@ -1,53 +1,24 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sadece Biz Dünyası</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sadece Biz</title>
   <style>
-    :root { --pink:#ff66b2; --pink-dark:#ff3385; }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      gap:18px; text-align:center;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg,#fff 0%, #ffe6f3 40%, #ffd1ea 100%);
-    }
-    h1{margin:0;color:#111;font-size:36px}
-    p{margin:0;color:#333;font-size:18px}
-    .buttons{margin-top:12px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
-    .btn{
-      display:inline-block; padding:14px 20px; font-size:17px;
-      border:none; border-radius:12px; text-decoration:none;
-      color:#fff; background:var(--pink); box-shadow:0 4px 10px rgba(0,0,0,.12);
-      transition:transform .12s ease, background .12s ease;
-    }
-    .btn:hover{ background:var(--pink-dark); transform:translateY(-1px) }
-    .note{font-size:13px; color:#666; margin-top:6px}
+    body{margin:0;min-height:100vh;display:flex;flex-direction:column;
+         justify-content:center;align-items:center;gap:12px;text-align:center;
+         font-family:Arial,Helvetica,sans-serif;background:#ffe6f3}
+    h1{margin:0;font-size:32px}
+    p{margin:0 0 6px 0}
+    .btn{padding:14px 18px;border:0;border-radius:12px;background:#ff66b2;
+         color:#fff;text-decoration:none;font-size:17px}
   </style>
 </head>
 <body>
-  <h1>Hoş geldin Hakan ✨💖</h1>
+  <h1>Hoş geldin Hakan 💖</h1>
   <p>Burası sadece senin dünyan…</p>
-
-  <div class="buttons">
-    <!-- 👇 Telefon numarasını kendi numaranla değiştir (başında 0 yok, ülke kodlu) -->
-    <a class="btn"
-       href="https://wa.me/905555555555?text=Merhaba%20Zeliha!%20Siteden%20geldim%20💖"
-       target="_blank" rel="noopener">
-       💬 Zeliha ile Konuş (WhatsApp)
-    </a>
-
-    <!-- İstersen Telegram butonu da dursun; kullanıcı adını düzenle -->
-    <a class="btn"
-       href="https://t.me/KENDI_TELEGRAM_ADIN"
-       target="_blank" rel="noopener">
-       ✈️ Telegram’dan Yaz
-    </a>
-  </div>
-
-  <div class="note">Not: WhatsApp için linkteki <b>905555555555</b>’i kendi numaranla değiştir.</div>
+  <a class="btn"
+     href="https://wa.me/905555555555?text=Merhaba%20Zeliha!%20Siteden%20geldim%20💖"
+     target="_blank" rel="noopener">💬 Zeliha ile Konuş</a>
 </body>
 </html>
