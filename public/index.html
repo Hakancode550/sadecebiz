@@ -37,3 +37,40 @@
   <a href="config.js" class="btn">Başla</a>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sadece Biz – Hafızalı Sohbet</title>
+<style>
+  :root{
+    --bg1:#ffe3ee; --bg2:#ffdff7;
+    --card:#ffffffee; --me:#e9f1ff; --you:#e7ffe9;
+    --txt:#333; --accent:#7b3af5; --btn:#6b46ff;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    color:var(--txt);
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    display:flex; align-items:center; justify-content:center;
+    padding:18px;
+  }
+  .wrap{
+    width:min(820px,100%); background:var(--card); border-radius:20px;
+    box-shadow:0 12px 40px #0000001a; overflow:hidden;
+  }
+  header{
+    padding:14px 18px; background:linear-gradient(90deg,#8a4bff,#ff66c4);
+    color:#fff; font-weight:700; letter-spacing:.2px; display:flex; align-items:center; justify-content:space-between;
+  }
+  header .small{font-weight:500; opacity:.9; font-size:.9rem}
+  #log{
+    height:min(60vh,560px); overflow:auto; padding:18px; display:flex; flex-direction:column; gap:10px;
+    background:linear-gradient(180deg,#ffffff 0,#ffffffc7 30%,#ffffff 100%);
+  }
+  .msg{max-width:80%; padding:12px 14px; border-radius:14px; line-height:1.35}
+  .me{background:var(--me); align-self:flex-end}
+  .you{background:var(--you); align-self:flex-start}
+  .meta{opacity:.55; font-size:.8rem; margin-top:4px
