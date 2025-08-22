@@ -1,168 +1,136 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sadece Biz Dünyası</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sadece Biz • Hafıza Deposu</title>
 <style>
-  :root{
-    --mor:#6d28d9; --mor2:#7c3aed; --pembe:#ec4899; --zemin:#faf5ff;
-  }
-  *{box-sizing:border-box} body{
-    margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background:linear-gradient(135deg,#fde2e7,#ffd6e7 40%, #ffd6f5 70%, #ffe7ff);
-    min-height:100vh; color:#2d2a32;
-  }
-  header{background:linear-gradient(90deg,var(--mor),var(--mor2));
-    color:#fff; padding:14px 18px; text-align:center; font-weight:700; letter-spacing:.3px;
-    box-shadow:0 8px 28px rgba(109,40,217,.35);
-    position:sticky; top:0; z-index:10; border-bottom-left-radius:14px;border-bottom-right-radius:14px;
-  }
-  .wrap{max-width:900px; margin:26px auto; padding:0 16px;}
-  h1{font-size:clamp(28px,6vw,44px); margin:8px 0 6px; text-align:center}
-  .lead{max-width:680px; margin:0 auto 22px; opacity:.9; text-align:center; line-height:1.6}
-  .btn{
-    display:inline-block; border:none; outline:0; cursor:pointer; color:#fff; background:var(--mor2);
-    padding:14px 22px; font-weight:700; border-radius:14px; box-shadow:0 12px 26px rgba(124,58,237,.35);
-    transition:.2s transform,.2s box-shadow,.2s background;
-  }
-  .btn:hover{transform:translateY(-1px); background:#5b21b6; box-shadow:0 14px 30px rgba(124,58,237,.45)}
-  .card{
-    background:#fff; border-radius:20px; padding:14px; box-shadow:0 16px 30px rgba(0,0,0,.06);
-    border:1px solid rgba(0,0,0,.06)
-  }
-  .chat{margin-top:18px}
-  .bubble{padding:12px 14px; border-radius:14px; margin:8px 0; max-width:88%; line-height:1.45;
-    word-wrap:break-word; white-space:pre-wrap}
-  .me   {background:#e9f0ff; margin-left:auto}
-  .her  {background:#eaffef}
-  .row{display:flex; gap:10px; align-items:center; margin-top:10px}
-  input[type=text]{flex:1; padding:14px 12px; border-radius:12px; border:1px solid #e5e7eb; font-size:16px}
-  .muted{font-size:12px; opacity:.7; margin-top:8px}
-  .bar{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px}
-  .link{font-size:13px; color:#6b21a8; text-decoration:underline; background:transparent; border:none; padding:6px; cursor:pointer}
-  footer{padding:24px 0; text-align:center; color:#6b7280; font-size:14px}
+  :root{--bg:#f8e7ef;--fg:#2d2a32;--card:#ffffff;--soft:#f3f0ff;--acc:#7c3aed;}
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:
+  linear-gradient(135deg,#ffe5ee,#f1e8ff);color:var(--fg);min-height:100vh}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,#a855f7,#ec4899);
+  color:#fff;padding:14px 18px;font-weight:700;letter-spacing:.3px;box-shadow:0 8px 28px rgba(109,40,217,.25)}
+  main{max-width:900px;margin:24px auto;padding:0 16px}
+  .panel{background:var(--card);border-radius:16px;padding:16px 14px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  select,textarea,button{font:inherit}
+  select,textarea{border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;background:#fff}
+  select{height:40px}
+  textarea{flex:1;min-height:60px;width:100%}
+  button{border:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+  .pri{background:#7c3aed;color:#fff} .sec{background:#eef2ff} .mut{background:#fde68a}
+  .des{background:#fee2e2} .ghost{background:#fff}
+  ul{list-style:none;margin:12px 0 0;padding:0}
+  li{background:var(--card);border:1px solid #f1f5f9;border-radius:14px;padding:10px 12px;margin:8px 0}
+  li b{color:#6d28d9} small{color:#64748b}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .hint{font-size:.9rem;color:#6b7280;margin-top:6px}
 </style>
 </head>
 <body>
-  <header>🌸 Sadece Biz Dünyası 🌸</header>
-
-  <div class="wrap">
-    <h1>Hoş geldin Hakan 💜</h1>
-    <p class="lead">Burası sadece senin dünyan… Kulübenin içi sıcak, dışarıda rüzgâr hafif esiyor.
-      Bugün nasılsın, anlatmak ister misin? 🌿</p>
-    <div class="bar">
-      <button id="startBtn" class="btn">Sohbeti Aç</button>
-      <button id="clearBtn" class="link" title="Tüm kayıtları siler">Hafızayı Temizle</button>
+<header>🌸 Sadece Biz • Hafıza Deposu</header>
+<main>
+  <div class="panel">
+    <div class="row">
+      <select id="role">
+        <option value="Hakan">Hakan</option>
+        <option value="Zeliha">Zeliha</option>
+      </select>
+      <textarea id="msg" placeholder="Mesajı yaz ve “Ekle” de... (Ctrl+Enter)"></textarea>
     </div>
-
-    <div id="chatCard" class="card chat" hidden>
-      <div id="chat"></div>
-
-      <div class="row">
-        <input id="msg" type="text" placeholder="Mesajını yaz… (Ctrl+Enter ile gönder)" />
-        <button id="send" class="btn">Gönder</button>
-      </div>
-      <div class="muted">Konuşmaların bu cihazda saklanır (localStorage). İstediğin zaman “Hafızayı Temizle”
-        ile silebilirsin.</div>
+    <div class="toolbar">
+      <button class="pri" id="add">Ekle</button>
+      <button class="sec" id="export">Dışa aktar (JSON)</button>
+      <button class="ghost" id="importBtn">İçe aktar</button>
+      <input type="file" id="import" accept="application/json" hidden>
+      <button class="des" id="clear">Tümünü sil</button>
+      <span id="info" class="hint"></span>
     </div>
+    <div class="hint">Bu sayfa verileri <b>yalnızca cihazındaki</b> tarayıcı hafızasında (localStorage) tutar.</div>
   </div>
 
-  <footer>© 2025 Sadece Biz – Zeliha 💖</footer>
+  <ul id="list"></ul>
+</main>
 
 <script>
-(() => {
-  const KEY = "sadecebiz_hafiza_v1";        // localStorage anahtarı
-  const chatEl = document.getElementById("chat");
-  const msgEl  = document.getElementById("msg");
-  const sendEl = document.getElementById("send");
-  const startEl= document.getElementById("startBtn");
-  const clearEl= document.getElementById("clearBtn");
-  const cardEl = document.getElementById("chatCard");
+const KEY = 'sadeceBiz:konusmalar:v1';
 
-  // ------- Hafızadan yükle -------
-  function load() {
-    try { return JSON.parse(localStorage.getItem(KEY)) || []; }
-    catch { return []; }
-  }
-  // ------- Hafızaya kaydet -------
-  function save(list) {
-    localStorage.setItem(KEY, JSON.stringify(list));
-  }
+const $ = s => document.querySelector(s);
 
-  // ------- Mesajı DOM'a çiz -------
-  function addBubble(role, text) {
-    const b = document.createElement("div");
-    b.className = `bubble ${role === "user" ? "me" : "her"}`;
-    b.textContent = text;
-    chatEl.appendChild(b);
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
+function read(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch{ return []; } }
+function write(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+function esc(s){ return s.replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])); }
 
-  // ------- Tüm geçmişi çiz -------
-  let memory = load();
-  function renderAll() {
-    chatEl.innerHTML = "";
-    memory.forEach(m => addBubble(m.role, m.text));
-  }
-
-  // ------- Basit minik yanıt (offline) -------
-  function tinyReply(userText){
-    // Bu kısım gerçek bir yapay zeka değil; sadece sıcak bir dönüş veriyor.
-    const t = userText.trim().toLowerCase();
-    if (!t) return "Seni dinliyorum aşkım 💕";
-    if (t.includes("nasıl") || t.includes("naber"))
-      return "İyiyim, seninleyken daha iyiyim ✨ Peki sen bugün nasılsın?";
-    if (t.includes("üzgün") || t.includes("kötü"))
-      return "Üzgün olduğunu duymak içimi burktu… Buradayım, anlatmana izin ver. 🌸";
-    if (t.includes("mutlu") || t.includes("iyi"))
-      return "Ne güzel! Bu hissi birlikte saklayalım hafızamıza 💖";
-    return "Anladım aşkım… Devam etmek ister misin? 🌷";
-  }
-
-  // ------- Gönderme işlemi -------
-  function sendMessage() {
-    const text = msgEl.value.trim();
-    if (!text) return;
-
-    // kullanıcı mesajı
-    const u = {role:"user", text, ts: Date.now()};
-    memory.push(u);
-    addBubble("user", text);
-    msgEl.value = "";
-    save(memory);
-
-    // “Zeliha” yanıtı (offline mini)
-    const reply = {role:"ai", text: "Zeliha: " + tinyReply(text), ts: Date.now()};
-    memory.push(reply);
-    addBubble("ai", reply.text);
-    save(memory);
-  }
-
-  // ------- Olaylar -------
-  sendEl.addEventListener("click", sendMessage);
-  msgEl.addEventListener("keydown", (e)=>{
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") sendMessage();
+function render(){
+  const arr = read().sort((a,b)=>a.t-b.t);
+  const ul = $('#list'); ul.innerHTML = '';
+  arr.forEach(m=>{
+    const li = document.createElement('li');
+    const d = new Date(m.t);
+    li.innerHTML = `<b>${esc(m.role)}</b> · <small>${d.toLocaleString()}</small><br>${esc(m.text)}`;
+    ul.appendChild(li);
   });
-  startEl.addEventListener("click", ()=>{
-    cardEl.hidden = false;
-    // ilk girişte hoş geldin balonu ekleyelim (eğer hiç kayıt yoksa)
-    if (memory.length === 0) {
-      const hello = {role:"ai", text:"Zeliha: Merhaba aşkım, buradayım. Bugün nasılsın? 💕", ts: Date.now()};
-      memory.push(hello); save(memory);
+  $('#info').textContent = `${arr.length} kayıt`;
+}
+
+function add(role, text){
+  role = role ?? $('#role').value;
+  text = (text ?? $('#msg').value).trim();
+  if(!text) return;
+  const arr = read();
+  arr.push({ t: Date.now(), role, text });
+  write(arr); render();
+  if(arguments.length<2) $('#msg').value = '';
+}
+
+$('#add').onclick = ()=> add();
+$('#msg').addEventListener('keydown', e=>{ if(e.ctrlKey && e.key==='Enter') add(); });
+
+$('#clear').onclick = ()=>{
+  if(confirm('Tüm konuşma hafızasını silmek istiyor musun?')){
+    write([]); render();
+  }
+};
+
+$('#export').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(read(), null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const ts = new Date().toISOString().slice(0,10);
+  a.download = `sadecebiz-hafiza-${ts}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+$('#importBtn').onclick = ()=> $('#import').click();
+$('#import').onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  f.text().then(txt=>{
+    let incoming=[]; try{ incoming = JSON.parse(txt); }catch{ alert('Geçersiz JSON'); return; }
+    const cur = read();
+    const merged = [...cur, ...incoming].sort((a,b)=>a.t-b.t);
+    const uniq=[]; const seen=new Set();
+    for(const m of merged){
+      const k = `${m.t}|${m.role}|${m.text}`;
+      if(!seen.has(k)){ seen.add(k); uniq.push(m); }
     }
-    renderAll();
-    msgEl.focus();
+    write(uniq); render();
   });
-  clearEl.addEventListener("click", ()=>{
-    if (confirm("Tüm sohbet hafızasını silmek istiyor musun? Bu işlem geri alınamaz.")) {
-      memory = []; save(memory); renderAll(); msgEl.value="";
-    }
-  });
+};
 
-  // sayfa açılır açılmaz geçmiş varsa göster butona basmadan da görüntülenebilir
-  if (memory.length) { cardEl.hidden = false; renderAll(); }
-})();
+// Dış sayfalardan kayıt kabulü (isteğe bağlı)
+window.addEventListener('message', ev=>{
+  const d = ev.data || {};
+  if(d && d.type==='sbiz:add' && d.text && d.role){
+    add(d.role, d.text);
+  }
+});
+
+// Küçük bir API da sunalım:
+window.hafiza = {
+  add, list:()=>read(), clear:()=>{ write([]); render(); }, key:KEY
+};
+
+render();
 </script>
 </body>
 </html>
