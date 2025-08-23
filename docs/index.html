@@ -3,92 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Basit 3D Avatar</title>
-  <style>
-    body { margin: 0; overflow: hidden; background: #111; }
-    canvas { display: block; }
-  </style>
+  <title>Test Sayfası</title>
 </head>
-<body>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
-
-  <script>
-    let scene, camera, renderer, controls;
-
-    init();
-    animate();
-
-    function init() {
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x222222);
-
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.set(0, 1.5, 3);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      // Işıklar
-      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
-      hemiLight.position.set(0, 20, 0);
-      scene.add(hemiLight);
-
-      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-      dirLight.position.set(3, 10, 10);
-      scene.add(dirLight);
-
-      // Kontroller
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.target.set(0, 1, 0);
-      controls.update();
-
-      // Basit Avatar (silindiri kafa, kutuyu gövde gibi yapalım)
-      const material = new THREE.MeshStandardMaterial({ color: 0xff99cc, flatShading: true });
-
-      // Gövde
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 0.5), material);
-      body.position.y = 0.75;
-      scene.add(body);
-
-      // Kafa
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
-      head.position.y = 2;
-      scene.add(head);
-
-      // Bacaklar
-      const legMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true });
-      const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.2, 32), legMaterial);
-      leg1.position.set(-0.3, -0.1, 0);
-      scene.add(leg1);
-
-      const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.2, 32), legMaterial);
-      leg2.position.set(0.3, -0.1, 0);
-      scene.add(leg2);
-
-      // Kollar
-      const arm1 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1, 32), legMaterial);
-      arm1.position.set(-0.8, 1.2, 0);
-      scene.add(arm1);
-
-      const arm2 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1, 32), legMaterial);
-      arm2.position.set(0.8, 1.2, 0);
-      scene.add(arm2);
-
-      window.addEventListener("resize", onWindowResize, false);
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-  </script>
+<body style="background: black; color: white; text-align: center; margin-top: 50px;">
+  <h1>Merhaba 👋</h1>
+  <p>GitHub Pages çalışıyor!</p>
 </body>
 </html>
