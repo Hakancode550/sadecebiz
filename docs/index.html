@@ -27,4 +27,318 @@
   .btn{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
   .btn.primary{background:var(--m1);color:#fff}
   .btn.ghost{background:#f5f3ff;color:#4c1d95}
-  .btn.warn{background:#fee2e2;color
+  .btn.warn{background:#fee2e2;color:#991b1b}
+  .hint{font-size:.9rem;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:12px}
+  .card{border:1px solid #eef; border-radius:14px; overflow:hidden; background:#fff}
+  .thumb{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+  .meta{padding:8px 10px;font-size:.85rem;color:#334155;word-break:break-all}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:#eef;border-radius:999px;padding:6px 10px;font-weight:600}
+  input[type="range"]{width:220px}
+  #cropImg{max-width:100%;max-height:48vh;border-radius:12px}
+  #cropPreview{width:128px;height:128px;border-radius:12px;object-fit:cover;border:1px solid #eee;display:block}
+  .divider{height:1px;background:#eee;margin:12px 0}
+  .canvasBox{min-height:160px;display:flex;align-items:center;justify-content:center;background:#fafafa;border:1px dashed #ddd;border-radius:12px}
+  .badge{font-size:.8rem;color:#475569}
+  .stickyTools{position:sticky;top:64px;z-index:4;background:#fff;border-radius:14px;padding:10px;box-shadow:0 6px 18px rgba(2,6,23,.06)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌸 Sadece Biz • Kontrol Paneli</h1>
+  <div class="hint">Veriler bu cihazda saklanır (localStorage). Dışa/İçe aktar ile yedek almayı unutma 💾</div>
+</header>
+
+<div class="wrap">
+
+  <!-- RESİMLER -->
+  <section class="section" id="sec-images">
+    <h2>🖼️ Resimler</h2>
+    <div class="row">
+      <label class="btn ghost">
+        + Resim Ekle
+        <input id="pickImages" type="file" accept="image/*" multiple style="display:none">
+      </label>
+      <button class="btn ghost" id="btnExport">⬇️ Dışa aktar (JSON)</button>
+      <label class="btn ghost">⬆️ İçe aktar
+        <input id="importJson" type="file" accept="application/json" style="display:none">
+      </label>
+      <button class="btn warn" id="btnClear">🗑️ Hepsini Sil</button>
+      <span class="hint" id="imgCount">0 görsel</span>
+    </div>
+    <div class="grid" id="gallery"></div>
+  </section>
+
+  <!-- KIRPICI -->
+  <section class="section" id="sec-crop">
+    <h2>📐 Fotoğraf Kırp (1:1 → 512×512)</h2>
+
+    <div class="row stickyTools">
+      <label class="btn ghost">
+        📁 Fotoğraf Seç
+        <input id="pickForCrop" type="file" accept="image/*" style="display:none">
+      </label>
+      <button class="btn ghost" id="btnPickFromGallery">🗂️ Galeriden Seç</button>
+      <button class="btn ghost" id="btnStartCrop">Kırpmayı Başlat</button>
+      <button class="btn primary" id="btnDoCrop">Kırp ve Kullan</button>
+      <span class="hint" id="cropStatus">—</span>
+    </div>
+
+    <div class="row" style="align-items:flex-start">
+      <img id="cropImg" alt="">
+      <div>
+        <div class="hint">Önizleme</div>
+        <img id="cropPreview" alt="">
+        <div class="hint badge" id="previewInfo"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="hint">İpucu: İki parmakla yakınlaştırıp sürükleyebilirsin. “Kırp ve Kullan” sonrası görüntü GIF oluşturucuya otomatik aktarılır.</div>
+  </section>
+
+  <!-- GIF OLUŞTURUCU -->
+  <section class="section" id="sec-gif">
+    <h2>🎬 GIF Oluştur</h2>
+
+    <div class="row">
+      <button class="btn ghost" id="btnUseCropped">✳️ Kırpılmış Görseli Kullan</button>
+      <button class="btn ghost" id="btnUseFromGallery">🗂️ Galeriden Kullan</button>
+      <span class="hint" id="gifSourceHint">Kaynak: —</span>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <span class="pill">FPS
+        <input id="fps" type="range" min="8" max="20" value="12">
+        <span id="fpsVal" class="badge">12</span>
+      </span>
+      <span class="pill">Süre (sn)
+        <input id="dur" type="range" min="1" max="6" value="2">
+        <span id="durVal" class="badge">2</span>
+      </span>
+      <button class="btn primary" id="btnMakeGif">GIF Oluştur</button>
+      <a id="btnDownloadGif" class="btn ghost" download="anim.gif" href="#" style="pointer-events:none;opacity:.6">⬇️ GIF’i İndir</a>
+      <span class="hint" id="gifStatus">—</span>
+    </div>
+
+    <div class="canvasBox" id="gifPreviewBox">
+      <span class="hint">GIF hazır olduğunda burada görünecek</span>
+    </div>
+
+    <!-- Kaynak gösterim (gizli) -->
+    <img id="gifSourceImg" alt="" style="display:none">
+  </section>
+
+</div>
+
+<script>
+/* ===================== Genel Yardımcılar ===================== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* ===================== Resim Galerisi (localStorage) ===================== */
+const LS_KEY = 'sb_images_v2';  // base64 dataURL listesi
+let images = [];                // [{id, dataURL, name, ts}]
+
+function loadImages(){
+  try{ images = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }catch(_){ images=[]; }
+  renderGallery();
+}
+function saveImages(){ localStorage.setItem(LS_KEY, JSON.stringify(images)); }
+
+function renderGallery(){
+  const g = $('#gallery'); g.innerHTML = '';
+  $('#imgCount').textContent = `${images.length} görsel`;
+  images.forEach((it, idx)=>{
+    const card = document.createElement('div'); card.className='card';
+    const img = document.createElement('img'); img.src = it.dataURL; img.className='thumb';
+    const meta = document.createElement('div'); meta.className='meta'; meta.textContent = it.name || `resim-${idx+1}.png`;
+    card.appendChild(img); card.appendChild(meta);
+    // Seçim için tık
+    card.addEventListener('click', ()=> {
+      // crop kaynağına koy
+      setCropSource(it.dataURL, 'Galeri');
+      // gif kaynağına da hızlıca set etmek istersen:
+      setGifSource(it.dataURL, 'Galeri');
+      window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+    });
+    g.appendChild(card);
+  });
+}
+
+// Resim ekle
+$('#pickImages').addEventListener('change', async (e)=>{
+  const files = [...e.target.files];
+  for(const f of files){
+    const dataURL = await fileToDataURL(f);
+    images.unshift({id:Date.now()+Math.random(), dataURL, name:f.name, ts: Date.now()});
+  }
+  saveImages(); renderGallery();
+  e.target.value = '';
+});
+
+$('#btnClear').addEventListener('click', ()=>{
+  if(!confirm('Tüm görseller silinsin mi? Bu işlem geri alınamaz.')) return;
+  images = []; saveImages(); renderGallery();
+});
+
+$('#btnExport').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(images)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sadece-biz-galeri.json';
+  a.click(); URL.revokeObjectURL(a.href);
+});
+
+$('#importJson').addEventListener('change', async (e)=>{
+  const file = e.target.files?.[0]; if(!file) return;
+  try{
+    const txt = await file.text();
+    const arr = JSON.parse(txt);
+    if(!Array.isArray(arr)) throw 'Geçersiz JSON';
+    images = arr.concat(images); // üste ekle
+    saveImages(); renderGallery();
+  }catch(err){ alert('JSON içe aktarım hatası: '+err); }
+  e.target.value='';
+});
+
+function fileToDataURL(file){
+  return new Promise((res,rej)=>{
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result);
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+}
+
+/* ===================== Kırpıcı ===================== */
+let cropper = null;
+let loadedURL = null;
+window.croppedDataURL = "";  // dışarı açık
+
+function setCropSource(src, from='Dosya'){
+  if(loadedURL){ try{ URL.revokeObjectURL(loadedURL); }catch(_){} }
+  $('#cropImg').src = src;
+  $('#cropStatus').textContent = `${from} yüklendi. 'Kırpmayı Başlat' ile düzenleyebilirsin.`;
+}
+
+$('#pickForCrop').addEventListener('change', (e)=>{
+  const f = e.target.files?.[0]; if(!f) return;
+  loadedURL = URL.createObjectURL(f);
+  setCropSource(loadedURL, 'Dosya');
+  e.target.value='';
+});
+
+$('#btnPickFromGallery').addEventListener('click', ()=>{
+  if(images.length===0){ alert('Galeride görsel yok. Önce “Resim Ekle” ile ekle.'); return; }
+  // En üsttekini örnek olarak al
+  const src = images[0].dataURL;
+  setCropSource(src, 'Galeri');
+});
+
+$('#btnStartCrop').addEventListener('click', ()=>{
+  const img = $('#cropImg'); if(!img.src){ $('#cropStatus').textContent='Önce bir görsel seç.'; return; }
+  if(cropper){ cropper.destroy(); cropper=null; }
+  cropper = new Cropper(img, {
+    aspectRatio: 1,
+    viewMode: 1,
+    background: false,
+    responsive: true,
+    zoomOnWheel: true,
+    dragMode: 'move'
+  });
+  $('#cropStatus').textContent = 'Kırpma aktif. Sürükle/zoom yap ve “Kırp ve Kullan”a bas.';
+});
+
+$('#btnDoCrop').addEventListener('click', ()=>{
+  if(!cropper){ $('#cropStatus').textContent='Önce kırpmayı başlat.'; return; }
+  try{
+    const canvas = cropper.getCroppedCanvas({
+      width:512, height:512,
+      imageSmoothingEnabled:true, imageSmoothingQuality:'high'
+    });
+    window.croppedDataURL = canvas.toDataURL('image/png', .92);
+    $('#cropPreview').src = window.croppedDataURL;
+    $('#previewInfo').textContent = '512×512 PNG hazır';
+    $('#cropStatus').textContent = 'Kırpıldı! GIF bölümünde “Kırpılmış Görseli Kullan” diyebilirsin.';
+    // GIF kaynağına otomatik set etmek istersen:
+    setGifSource(window.croppedDataURL, 'Kırpılmış');
+  }catch(err){
+    console.error(err); $('#cropStatus').textContent = 'Kırpma hata verdi.';
+  }
+});
+
+/* ===================== GIF Oluşturucu ===================== */
+let gifSource = "";  // dataURL
+function setGifSource(src, from='—'){
+  gifSource = src;
+  $('#gifSourceImg').src = src;
+  $('#gifSourceHint').textContent = `Kaynak: ${from}`;
+}
+
+$('#btnUseCropped').addEventListener('click', ()=>{
+  if(!window.croppedDataURL){ alert('Önce bir görseli kırp.'); return; }
+  setGifSource(window.croppedDataURL, 'Kırpılmış');
+});
+
+$('#btnUseFromGallery').addEventListener('click', ()=>{
+  if(images.length===0){ alert('Galeride görsel yok.'); return; }
+  setGifSource(images[0].dataURL, 'Galeri (ilk görsel)');
+});
+
+const fpsEl = $('#fps'), durEl = $('#dur');
+const fpsVal = $('#fpsVal'), durVal = $('#durVal');
+fpsEl.addEventListener('input', ()=> fpsVal.textContent = fpsEl.value);
+durEl.addEventListener('input', ()=> durVal.textContent = durEl.value);
+
+$('#btnMakeGif').addEventListener('click', async ()=>{
+  if(!gifSource){ alert('Önce GIF için kaynak seç.'); return; }
+  $('#gifStatus').textContent = 'Oluşturuluyor… Cihazına göre birkaç saniye sürebilir.';
+  $('#btnDownloadGif').style.pointerEvents='none';
+  $('#btnDownloadGif').style.opacity='.6';
+  $('#gifPreviewBox').innerHTML = '<span class="hint">Hazırlanıyor…</span>';
+
+  // gifshot tek kareyi loop ederek GIF oluşturabilir.
+  const fps = Number(fpsEl.value);
+  const sec = Number(durEl.value);
+  const totalFrames = Math.max(1, Math.round(fps * sec));
+
+  // Aynı kareyi hafif zoom puls efekti ile çoğaltalım (hafif büyütme/küçültme)
+  const frames = [];
+  for(let i=0;i<totalFrames;i++){
+    frames.push(gifSource);
+  }
+
+  gifshot.createGIF({
+    images: frames,
+    gifWidth: 512,
+    gifHeight: 512,
+    interval: 1/fps,
+    numFrames: totalFrames,
+    sampleInterval: 5,
+    numWorkers: 2,
+    // tek kare olduğu için animasyon etkisi sınırlı; hafif titreşim için kullanışlıdır
+  }, function(obj){
+    if(!obj.image){
+      $('#gifStatus').textContent = 'GIF oluşturulamadı. Farklı görsel/fps/süre deneyin.';
+      $('#gifPreviewBox').innerHTML = '<span class="hint">GIF başarısız</span>';
+      return;
+    }
+    const dataURL = obj.image;
+    const img = new Image();
+    img.src = dataURL; img.style.maxWidth='100%'; img.style.borderRadius='10px';
+    $('#gifPreviewBox').innerHTML = ''; $('#gifPreviewBox').appendChild(img);
+
+    const a = $('#btnDownloadGif');
+    a.href = dataURL; a.style.pointerEvents='auto'; a.style.opacity='1';
+    $('#gifStatus').textContent = 'Hazır! “GIF’i İndir” ile kaydedebilirsin.';
+  });
+});
+
+/* ===================== Init ===================== */
+loadImages();
+
+</script>
+</body>
+</html>
