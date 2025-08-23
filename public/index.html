@@ -1,187 +1,91 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sadece Biz Dünyası</title>
-<style>
-  :root{
-    --mor:#6d28d9; --mor2:#7c3aed; --pembe:#ec4899; --zemin:#faf5ff;
-  }
-  *{box-sizing:border-box} body{
-    margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background:linear-gradient(135deg,#fde2e7,#ffd6e7 40%, #ffd6f5 70%, #ffe7ff);
-    min-height:100vh; color:#2d2a32;
-  }
-  header{background:linear-gradient(90deg,var(--mor),var(--mor2));
-    color:#fff; padding:14px 18px; text-align:center; font-weight:700; letter-spacing:.3px;
-    box-shadow:0 8px 28px rgba(109,40,217,.35);
-    position:sticky; top:0; z-index:10; border-bottom-left-radius:14px;border-bottom-right-radius:14px;
-  }
-  .wrap{max-width:900px; margin:26px auto; padding:0 16px;}
-  h1{font-size:clamp(28px,6vw,44px); margin:8px 0 6px; text-align:center}
-  .lead{max-width:680px; margin:0 auto 22px; opacity:.9; text-align:center; line-height:1.6}
-  .btn{
-    display:inline-block; border:none; outline:0; cursor:pointer; color:#fff; background:var(--mor2);
-    padding:14px 22px; font-weight:700; border-radius:14px; box-shadow:0 12px 26px rgba(124,58,237,.35);
-    transition:.2s transform,.2s box-shadow,.2s background;
-  }
-  .btn:hover{transform:translateY(-1px); background:#5b21b6; box-shadow:0 14px 30px rgba(124,58,237,.45)}
-  .card{
-    background:#fff; border-radius:20px; padding:14px; box-shadow:0 16px 30px rgba(0,0,0,.06);
-    border:1px solid rgba(0,0,0,.06)
-  }
-  .chat{margin-top:18px}
-  .bubble{padding:12px 14px; border-radius:14px; margin:8px 0; max-width:88%; line-height:1.45;
-    word-wrap:break-word; white-space:pre-wrap}
-  .me   {background:#e9f0ff; margin-left:auto}
-  .her  {background:#eaffef}
-  .row{display:flex; gap:10px; align-items:center; margin-top:10px}
-  input[type=text]{flex:1; padding:14px 12px; border-radius:12px; border:1px solid #e5e7eb; font-size:16px}
-  .muted{font-size:12px; opacity:.7; margin-top:8px}
-  .bar{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px}
-  .link{font-size:13px; color:#6b21a8; text-decoration:underline; background:transparent; border:none; padding:6px; cursor:pointer}
-<!-- ====== Konuşma Geçmişi Dışa Aktarma Paneli ====== -->
-<style>
-  .export-box{
-    max-width: 900px; margin: 28px auto; padding: 14px;
-    background: #fff8ff; border: 1px solid #e8c8ef; border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(109,40,217,.06);
-  }
-  .export-box h3{margin:0 0 10px; font-size:18px; color:#5b21b6;}
-  .export-actions{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px}
-  .export-actions button{
-    padding:10px 14px; border:0; border-radius:10px; font-weight:600; cursor:pointer;
-    background:#7c3aed; color:#fff;
-  }
-  .export-actions button.secondary{background:#a78bfa;}
-  #exportText{
-    width:100%; height:160px; padding:10px; border-radius:10px;
-    border:1px solid #e6d7f9; font-size:14px; background:#fdfbff;
-  }
-  .hint{font-size:12px; color:#6b7280; margin-top:6px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Kadın Avatar</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #111; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
-<div class="export-box" id="exportBox">
-  <h3>📝 Konuşma Geçmişi</h3>
-  <div class="export-actions">
-    <button id="copyBtn">Geçmişi Kopyala</button>
-    <button id="downloadBtn" class="secondary">.txt Olarak İndir</button>
-    <button id="refreshBtn" class="secondary">Güncelle</button>
-  </div>
-  <textarea id="exportText" placeholder="Geçmiş burada görünecek…"></textarea>
-  <div class="hint">Not: Geçmiş yalnızca bu cihazdaki tarayıcıda saklanır. “Kopyala” ile buraya yapıştırırsan ben görebilirim. 💜</div>
-</div>
+  <script>
+    let scene, camera, renderer, controls, mixer, clock;
 
-<script>
-(function(){
-  // Sık kullanılan muhtemel anahtarlar — biz en güvenlisi olsun diye geniş tarama yapıyoruz.
-  const LIKELY_KEYS = [
-    'sadecebiz_chat', 'sb_chat', 'chatHistory', 'conversation_history',
-    'sohbet_gecmisi', 'hafiza', 'memory', 'messages'
-  ];
+    init();
+    animate();
 
-  function safeParse(value){
-    try{ return JSON.parse(value); }catch{ return value; }
-  }
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x222222);
 
-  function normalizeToLines(data, keyName){
-    const lines = [];
-    if (!data) return lines;
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 1.5, 3);
 
-    // Dizi ise
-    if (Array.isArray(data)){
-      for (const m of data){
-        if (m && typeof m === 'object'){
-          const who = (m.role || m.author || m.kim || 'Kullanıcı');
-          const text = (m.text || m.content || m.metin || m.message || '');
-          if (text) lines.push(`${who}: ${text}`);
-        }else if (typeof m === 'string'){
-          lines.push(m);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Işıklar
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+      hemiLight.position.set(0, 20, 0);
+      scene.add(hemiLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+      dirLight.position.set(3, 10, 10);
+      scene.add(dirLight);
+
+      // Kontroller
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.target.set(0, 1, 0);
+      controls.update();
+
+      clock = new THREE.Clock();
+
+      // Kadın Modeli (GLTF)
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        "https://models.readyplayer.me/64fba6eeb8b58ce8b2c1c1f7.glb", // Örnek gerçekçi kadın avatar modeli
+        function (gltf) {
+          const model = gltf.scene;
+          model.scale.set(1, 1, 1);
+          scene.add(model);
+
+          // Animasyon kontrolcüsü
+          mixer = new THREE.AnimationMixer(model);
+          if (gltf.animations.length > 0) {
+            const action = mixer.clipAction(gltf.animations[0]);
+            action.play();
+          }
+        },
+        undefined,
+        function (error) {
+          console.error("Model yüklenemedi:", error);
         }
-      }
-      return lines;
+      );
+
+      window.addEventListener("resize", onWindowResize, false);
     }
 
-    // Nesne ise
-    if (typeof data === 'object'){
-      if (Array.isArray(data.messages)){
-        for (const m of data.messages){
-          const who = (m.role || m.author || 'Kullanıcı');
-          const text = (m.text || m.content || m.message || '');
-          if (text) lines.push(`${who}: ${text}`);
-        }
-        return lines;
-      }
-      // Başka alan adları için düz metin fallback
-      if (data.text) lines.push(String(data.text));
-      return lines;
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    // Düz metin
-    if (typeof data === 'string'){
-      // Çok satırlı ise aynen ekle
-      if (data.includes('\n')) return data.split('\n').map(s => s.trim()).filter(Boolean);
-      lines.push(`${keyName}: ${data}`);
-      return lines;
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+      if (mixer) mixer.update(delta);
+
+      renderer.render(scene, camera);
     }
-
-    return lines;
-  }
-
-  function collectHistory(){
-    const allLines = [];
-    const keys = Object.keys(localStorage);
-
-    // Önce muhtemel anahtarları ekle
-    const preferred = keys.filter(k => LIKELY_KEYS.some(p => k.toLowerCase().includes(p.toLowerCase())));
-    const rest = keys.filter(k => !preferred.includes(k) && /(chat|sohbet|history|hafiza|memory|message)/i.test(k));
-    const ordered = [...preferred, ...rest];
-
-    for (const k of ordered){
-      const raw = localStorage.getItem(k);
-      if (!raw) continue;
-      const parsed = safeParse(raw);
-      const lines = normalizeToLines(parsed, k);
-      for (const L of lines){ if (L && !allLines.includes(L)) allLines.push(L); }
-    }
-
-    // Son metni oluştur
-    const text = allLines.join('\n');
-    const box = document.getElementById('exportText');
-    if (box) box.value = text || 'Henüz kayıt bulunamadı. Sohbet ettikten sonra “Güncelle”ye basabilirsin.';
-    return text;
-  }
-
-  function copyHistory(){
-    const t = collectHistory();
-    if (!t){ alert('Kopyalanacak içerik bulunamadı.'); return; }
-    navigator.clipboard.writeText(t).then(
-      ()=>alert('Konuşma geçmişi kopyalandı. Buraya yapıştırabilirsin 💜'),
-      ()=>alert('Kopyalama başarısız oldu. Metni kutudan manuel seçip kopyalayabilirsin.')
-    );
-  }
-
-  function downloadHistory(){
-    const t = collectHistory();
-    if (!t){ alert('İndirilecek içerik bulunamadı.'); return; }
-    const blob = new Blob([t], {type:'text/plain;charset=utf-8'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'sadecebiz-gecmis.txt';
-    document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(a.href);
-    a.remove();
-  }
-
-  // Butonlar
-  document.getElementById('copyBtn')?.addEventListener('click', copyHistory);
-  document.getElementById('downloadBtn')?.addEventListener('click', downloadHistory);
-  document.getElementById('refreshBtn')?.addEventListener('click', collectHistory);
-
-  // Sayfa açılır açılmaz doldur
-  collectHistory();
-})();
-</script>
-<!-- ====== /Konuşma Geçmişi Dışa Aktarma Paneli ====== -->
+  </script>
+</body>
+</html>
