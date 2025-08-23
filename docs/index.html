@@ -1,12 +1,94 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Test Sayfası</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Yüzümle GIF Yap – Sadece Biz</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<style>
+  :root{
+    --bg1:#6d28d9; --bg2:#a855f7; --card:#ffffff; --ink:#1f2937; --muted:#6b7280;
+    --accent:#8b5cf6; --accent2:#22c55e; --danger:#ef4444;
+  }
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  body{
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#fff; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .app{width:min(980px,100%); background:rgba(255,255,255,.08); backdrop-filter:blur(6px);
+       border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:20px;}
+  header{display:flex; gap:12px; align-items:center; margin-bottom:14px}
+  header h1{font-size:clamp(20px,4vw,28px); margin:0}
+  .card{background:var(--card); color:var(--ink); border-radius:16px; padding:16px;}
+  .grid{display:grid; grid-template-columns:1.2fr .8fr; gap:16px}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+  .controls label{display:block; font-size:14px; color:var(--muted); margin-bottom:6px}
+  .row{display:flex; gap:10px; flex-wrap:wrap}
+  input[type=file]{display:none}
+  .btn{
+    appearance:none; border:0; border-radius:12px; padding:12px 14px; font-weight:600;
+    cursor:pointer; transition:transform .08s ease, box-shadow .2s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .primary{background:var(--accent); color:#fff}
+  .success{background:var(--accent2); color:#fff}
+  .ghost{background:#eef2ff; color:#4f46e5}
+  .danger{background:var(--danger); color:#fff}
+  select, input[type=range]{
+    width:100%; padding:10px; border-radius:12px; border:1px solid #e5e7eb; background:#fff;
+  }
+  .hint{color:var(--muted); font-size:13px; margin-top:6px}
+  .preview{
+    display:grid; grid-template-columns:1fr; gap:12px; align-items:center; justify-items:center;
+  }
+  canvas, .out img{width:100%; max-width:420px; height:auto; border-radius:14px; box-shadow:0 8px 28px rgba(0,0,0,.15)}
+  .badge{display:inline-block; background:#111827; color:#fff; padding:4px 10px; border-radius:999px; font-size:12px}
+  .progress{height:10px; width:100%; background:#f3f4f6; border-radius:999px; overflow:hidden}
+  .bar{height:100%; width:0%; background:var(--accent); transition:width .2s}
+  footer{margin-top:10px; text-align:center; color:#e5e7eb; font-size:12px}
+</style>
 </head>
-<body style="background: black; color: white; text-align: center; margin-top: 50px;">
-  <h1>Merhaba 👋</h1>
-  <p>GitHub Pages çalışıyor!</p>
-</body>
-</html>
+<body>
+  <div class="app">
+    <header>
+      <h1>📸 Yüzünden GIF Oluştur</h1>
+      <span class="badge">Tamamen tarayıcıda • Veri dışarı çıkmaz</span>
+    </header>
+
+    <div class="grid">
+      <!-- Sol: Önizleme -->
+      <section class="card preview">
+        <canvas id="cv" width="512" height="512"></canvas>
+        <div class="out"></div>
+        <div class="progress" hidden><div class="bar" id="bar"></div></div>
+      </section>
+
+      <!-- Sağ: Kontroller -->
+      <section class="card controls">
+        <div class="row" style="gap:8px; align-items:center; margin-bottom:8px">
+          <label for="file" class="btn ghost">📁 Fotoğraf Seç</label>
+          <input id="file" type="file" accept="image/*" />
+          <button class="btn danger" id="clear">Temizle</button>
+        </div>
+
+        <label>Efekt</label>
+        <select id="effect">
+          <option value="zoom">Yakın Uzak (Zoom Pulse)</option>
+          <option value="slide">Sağa Sola Kay (Slide)</option>
+          <option value="hearts">Kalpler (Heart Pop)</option>
+          <option value="sparkle">Parıltı (Sparkle)</option>
+        </select>
+
+        <label style="margin-top:10px">Hız (FPS ~ 10–20 iyidir)</label>
+        <input id="fps" type="range" min="8" max="24" value="14" />
+
+        <label style="margin-top:10px">Süre (saniye)</label>
+        <input id="sec" type="range" min="1" max="4" value="2" />
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="make">🎬 GIF Oluştur</button>
+          <button class="btn success" id="download" disabled>⬇️ GIF’i İndir</button>
+        </div>
+        <p class="hint">
+          İpucu: Kare boyutu 512×512. Yüklediğin fotoğraf kareye sığacak şekilde
+          otomatik kırpılır. Efekti değiştirip tekrar “GIF Oluştur”a bas
