@@ -1,249 +1,30 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Benim GIF Yapıcı 💜</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sadece Biz • Kontrol Paneli (Kırp + GIF)</title>
+
+<!-- Cropper.js (kırpma) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+<!-- gifshot (GIF üretici) -->
+<script src="https://cdn.jsdelivr.net/npm/gifshot@0.4.5/build/gifshot.min.js"></script>
+
 <style>
   :root{
-    --bg1:#7b2ff7; --bg2:#f107a3;
-    --card:#ffffff; --ink:#2d2a32; --muted:#666;
-    --accent:#6c4df7; --danger:#ee4d5a; --ok:#11a36a;
-    --shadow:0 10px 30px rgba(0,0,0,.15);
-    --rad:18px;
+    --m1:#6d28d9; --m2:#7c3aed; --ink:#1f2937; --muted:#6b7280;
+    --card:#ffffff; --bg:linear-gradient(135deg,#ffe5f3 0%,#fde7ff 100%);
   }
-  *{box-sizing:border-box} body{
-    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
-    color:var(--ink);
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    min-height:100svh; display:flex; align-items:center; justify-content:center;
-    padding:24px;
-  }
-  .wrap{
-    width:min(920px,100%); background:var(--card); border-radius:var(--rad);
-    box-shadow:var(--shadow); overflow:hidden;
-  }
-  header{padding:18px 22px; background:linear-gradient(90deg,#8b5cf6,#ec4899); color:#fff}
-  header h1{margin:0; font-size:22px}
-  .content{padding:16px; display:grid; grid-template-columns:1fr 340px; gap:16px}
-  @media (max-width:880px){ .content{grid-template-columns:1fr} }
-  .stage{
-    background:#f6f7fb; border-radius:14px; padding:12px; box-shadow:inset 0 0 0 1px #e8e8f0;
-    min-height:360px; display:flex; align-items:center; justify-content:center;
-  }
-  canvas{max-width:100%; border-radius:12px; background:#fff; box-shadow:inset 0 0 0 1px #e3e3ee}
-  .panel{border-radius:14px; background:#f9f9ff; padding:14px; box-shadow:inset 0 0 0 1px #ececff}
-  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0}
-  label{font-size:13px; color:var(--muted)}
-  select, input[type="range"]{
-    width:100%; accent-color:var(--accent);
-  }
-  .btn{border:0; border-radius:12px; padding:12px 14px; font-weight:600; cursor:pointer}
-  .btn.ghost{background:#eef; color:#3b33d6}
-  .btn.primary{background:var(--accent); color:#fff}
-  .btn.ok{background:var(--ok); color:#fff}
-  .btn.danger{background:var(--danger); color:#fff}
-  .hint{font-size:12px; color:var(--muted); margin-top:6px}
-  .foot{display:flex; gap:10px; flex-wrap:wrap}
-  .pill{font-size:12px; background:#eee; color:#444; padding:6px 10px; border-radius:999px}
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <header><h1>📸 GIF Yapıcı — fotoğrafından mini animasyon</h1></header>
-    <div class="content">
-
-      <!-- Önizleme alanı -->
-      <div class="stage">
-        <canvas id="cv" width="512" height="512"></canvas>
-      </div>
-
-      <!-- Kontrol paneli -->
-      <div class="panel">
-
-        <div class="row">
-          <button class="btn ghost" id="pickBtn">📁 Fotoğraf Seç</button>
-          <button class="btn danger" id="clearBtn">Temizle</button>
-        </div>
-
-        <div class="row">
-          <label for="effect">Efekt</label>
-          <select id="effect">
-            <option value="pulse">Yakın Uzak (Zoom Pulse)</option>
-            <option value="pan">Sola-Sağa Sallan (Pan)</option>
-            <option value="slowzoom">Yavaş Yakınlaşma</option>
-          </select>
-        </div>
-
-        <div class="row">
-          <label>Hız (FPS ≈ 10–20 iyidir)</label>
-          <input id="fps" type="range" min="6" max="24" value="14" />
-        </div>
-
-        <div class="row">
-          <label>Süre (sn)</label>
-          <input id="dur" type="range" min="1" max="6" value="3" />
-        </div>
-
-        <div class="foot">
-          <button class="btn primary" id="makeBtn">🎬 GIF Oluştur</button>
-          <a class="btn ok" id="dlBtn" download="benim.gif" style="pointer-events:none;opacity:.5">⬇️ GIF’i İndir</a>
-          <span id="status" class="pill">Hazır</span>
-        </div>
-
-        <p class="hint">İpucu: Görsel kare (512×512) boyutunda işlenir. Çok büyük fotoğraflarda cihazın RAM’i sınırlıysa
-          biraz bekleyebilirsin. “GIF Oluştur”dan sonra indir butonu açılır.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- gif.js ana kütüphane -->
-  <script src="https://unpkg.com/gif.js@0.2.0/dist/gif.js"></script>
-  <script>
-  // ====== Durum değişkenleri ======
-  const cv = document.getElementById('cv');
-  const ctx = cv.getContext('2d');
-  const pickBtn  = document.getElementById('pickBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const effectEl = document.getElementById('effect');
-  const fpsEl    = document.getElementById('fps');
-  const durEl    = document.getElementById('dur');
-  const makeBtn  = document.getElementById('makeBtn');
-  const dlBtn    = document.getElementById('dlBtn');
-  const statusEl = document.getElementById('status');
-
-  const hiddenFile = document.createElement('input');
-  hiddenFile.type = 'file';
-  hiddenFile.accept = 'image/*';
-
-  let baseImg = null;   // Image objesi
-  let imageLoaded = false;
-  let lastBlobUrl = null;
-
-  // ====== Yardımcı çizim ======
-  function drawBase(offsetX=0, offsetY=0, scale=1){
-    ctx.clearRect(0,0,cv.width,cv.height);
-    if(!imageLoaded || !baseImg) {
-      // boş grid
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0,0,cv.width,cv.height);
-      ctx.fillStyle = "#bbb";
-      ctx.font = "600 18px system-ui, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("Önce fotoğraf seç ✨", cv.width/2, cv.height/2);
-      return;
-    }
-    const W=cv.width, H=cv.height;
-
-    // Kırp ve ortala
-    const iw=baseImg.width, ih=baseImg.height;
-    const s = Math.max(W/iw, H/ih)*scale;
-    const dw = iw*s, dh = ih*s;
-    const dx = (W - dw)/2 + offsetX, dy = (H - dh)/2 + offsetY;
-
-    ctx.drawImage(baseImg, dx, dy, dw, dh);
-  }
-
-  // İlk çizim
-  drawBase();
-
-  // ====== Fotoğraf Seçme (güvenilir yöntem) ======
-  pickBtn.addEventListener('click', () => hiddenFile.click());
-
-  hiddenFile.addEventListener('change', () => {
-    const f = hiddenFile.files && hiddenFile.files[0];
-    if(!f) return;
-
-    if(lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
-    lastBlobUrl = URL.createObjectURL(f);
-
-    const img = new Image();
-    img.onload = () => {
-      imageLoaded = true;
-      baseImg = img;
-      drawBase(0,0,1);
-      URL.revokeObjectURL(lastBlobUrl);
-      lastBlobUrl = null;
-      statusEl.textContent = "Görsel yüklendi ✔︎";
-    };
-    img.onerror = () => {
-      alert("Görsel açılamadı. Farklı bir fotoğraf dener misin?");
-      URL.revokeObjectURL(lastBlobUrl);
-      lastBlobUrl = null;
-    };
-    img.src = lastBlobUrl;
-  });
-
-  // Temizle
-  clearBtn.addEventListener('click', () => {
-    baseImg = null; imageLoaded = false;
-    drawBase(); dlBtn.style.opacity=.5; dlBtn.style.pointerEvents="none";
-    statusEl.textContent = "Temizlendi";
-  });
-
-  // ====== GIF oluşturma ======
-  function getWorkerURL(){
-    // Önce unpkg, hata olursa jsDelivr deneyelim (bazı ağlarda biri engellenebiliyor)
-    return 'https://unpkg.com/gif.js@0.2.0/dist/gif.worker.js';
-  }
-
-  makeBtn.addEventListener('click', async () => {
-    if(!imageLoaded){ alert("Önce fotoğraf seç 💜"); return; }
-
-    const fps = +fpsEl.value;                // kare/saniye
-    const dur = +durEl.value;                // saniye
-    const total = Math.max(1, Math.round(fps * dur));
-    const eff = effectEl.value;
-
-    statusEl.textContent = "Hazırlanıyor…";
-    dlBtn.style.opacity=.5; dlBtn.style.pointerEvents="none";
-
-    const gif = new GIF({
-      workers: 2,
-      quality: 10,            // 1 en iyi, 30 daha hızlı
-      workerScript: getWorkerURL(),
-      width: cv.width,
-      height: cv.height
-    });
-
-    for(let i=0;i<total;i++){
-      const t = i/total; // 0..1
-      // Efektlere göre ofset & ölçek hesapla
-      let ox=0, oy=0, sc=1;
-
-      if(eff==='pulse'){
-        // 0..1..0 nabız
-        const pulse = 0.5 - Math.cos(t*2*Math.PI)/2; // 0..1
-        sc = 1 + pulse*0.08;                         // %8 yakın/uzak
-      }else if(eff==='pan'){
-        // sola-sağa yumuşak geçiş
-        ox = Math.sin(t*2*Math.PI) * 10;             // ±10px kaydır
-      }else if(eff==='slowzoom'){
-        sc = 1 + t*0.12;                              // %12 yakınlaş
-      }
-
-      drawBase(ox, oy, sc);
-      gif.addFrame(ctx, {copy:true, delay: 1000/fps});
-    }
-
-    gif.on('progress', p => {
-      statusEl.textContent = `Oluşturuluyor… %${Math.round(p*100)}`;
-    });
-
-    gif.on('finished', blob => {
-      const url = URL.createObjectURL(blob);
-      dlBtn.href = url; dlBtn.style.pointerEvents="auto"; dlBtn.style.opacity=1;
-      statusEl.textContent = "Hazır! Şimdi indirebilirsin ↓";
-    });
-
-    try{
-      gif.render();
-    }catch(e){
-      alert("GIF oluştururken hata oluştu. Bir kez daha dener misin?");
-      console.error(e);
-      statusEl.textContent = "Hata";
-    }
-  });
-  </script>
-</body>
-</html>
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--m1),var(--m2));color:#fff;padding:16px 20px;box-shadow:0 8px 24px rgba(109,40,217,.25)}
+  h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px}
+  .wrap{max-width:980px;margin:22px auto;padding:0 14px}
+  .section{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(17,24,39,.08);padding:16px 16px 18px;margin:18px 0}
+  .section h2{margin:2px 0 12px;font-size:20px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--m1);color:#fff}
+  .btn.ghost{background:#f5f3ff;color:#4c1d95}
+  .btn.warn{background:#fee2e2;color
