@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>3D Kadın Avatar</title>
+  <title>Basit 3D Avatar</title>
   <style>
     body { margin: 0; overflow: hidden; background: #111; }
     canvas { display: block; }
@@ -11,11 +11,10 @@
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
   <script>
-    let scene, camera, renderer, controls, mixer, clock;
+    let scene, camera, renderer, controls;
 
     init();
     animate();
@@ -45,29 +44,37 @@
       controls.target.set(0, 1, 0);
       controls.update();
 
-      clock = new THREE.Clock();
+      // Basit Avatar (silindiri kafa, kutuyu gövde gibi yapalım)
+      const material = new THREE.MeshStandardMaterial({ color: 0xff99cc, flatShading: true });
 
-      // Kadın Modeli (GLTF)
-      const loader = new THREE.GLTFLoader();
-      loader.load(
-        "https://models.readyplayer.me/64fba6eeb8b58ce8b2c1c1f7.glb", // Örnek gerçekçi kadın avatar modeli
-        function (gltf) {
-          const model = gltf.scene;
-          model.scale.set(1, 1, 1);
-          scene.add(model);
+      // Gövde
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 0.5), material);
+      body.position.y = 0.75;
+      scene.add(body);
 
-          // Animasyon kontrolcüsü
-          mixer = new THREE.AnimationMixer(model);
-          if (gltf.animations.length > 0) {
-            const action = mixer.clipAction(gltf.animations[0]);
-            action.play();
-          }
-        },
-        undefined,
-        function (error) {
-          console.error("Model yüklenemedi:", error);
-        }
-      );
+      // Kafa
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
+      head.position.y = 2;
+      scene.add(head);
+
+      // Bacaklar
+      const legMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true });
+      const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.2, 32), legMaterial);
+      leg1.position.set(-0.3, -0.1, 0);
+      scene.add(leg1);
+
+      const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.2, 32), legMaterial);
+      leg2.position.set(0.3, -0.1, 0);
+      scene.add(leg2);
+
+      // Kollar
+      const arm1 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1, 32), legMaterial);
+      arm1.position.set(-0.8, 1.2, 0);
+      scene.add(arm1);
+
+      const arm2 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1, 32), legMaterial);
+      arm2.position.set(0.8, 1.2, 0);
+      scene.add(arm2);
 
       window.addEventListener("resize", onWindowResize, false);
     }
@@ -80,10 +87,6 @@
 
     function animate() {
       requestAnimationFrame(animate);
-
-      const delta = clock.getDelta();
-      if (mixer) mixer.update(delta);
-
       renderer.render(scene, camera);
     }
   </script>
