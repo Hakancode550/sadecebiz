@@ -338,7 +338,130 @@ $('#btnMakeGif').addEventListener('click', async ()=>{
 
 /* ===================== Init ===================== */
 loadImages();
+<!-- === Avatar / Heart Widget – start === -->
+<style>
+  .sb-avatar-wrap{
+    position:fixed; right:18px; bottom:18px; z-index:9999;
+    width:96px; height:96px; border-radius:50%;
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+    background:radial-gradient(circle at 30% 30%, #fff, #ffe7f1 70%);
+    display:grid; place-items:center; cursor:grab; user-select:none;
+    transition:box-shadow .25s ease;
+  }
+  .sb-avatar-wrap:active{ cursor:grabbing; box-shadow:0 6px 16px rgba(0,0,0,.25); }
+  .sb-avatar-img{
+    width:78px; height:78px; border-radius:50%; object-fit:cover;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.15));
+    transition:transform .15s ease;
+  }
+  .sb-badge{
+    position:absolute; inset:auto -6px -6px auto;
+    background:linear-gradient(135deg,#9b5de5,#f15bb5); color:#fff;
+    font:600 12px/1.1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding:6px 10px; border-radius:999px; box-shadow:0 4px 12px rgba(0,0,0,.15);
+  }
+  .sb-toggle{
+    position:fixed; right:18px; bottom:122px; z-index:9999;
+    background:#fff; color:#6b21a8; border:2px solid #e9d5ff;
+    font:600 12px/1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding:8px 10px; border-radius:10px; box-shadow:0 6px 16px rgba(0,0,0,.12);
+  }
+  .sb-toggle b{color:#111}
+  @media (max-width:480px){ .sb-avatar-wrap{width:84px;height:84px} .sb-avatar-img{width:70px;height:70px} }
+</style>
 
+<button class="sb-toggle" aria-label="Mod değiştir">
+  Mod: <b>Takip</b> • <span>Kaçış</span>
+</button>
+<div class="sb-avatar-wrap" id="sbAvatar" title="Sürükle veya fareyi oynat ✨">
+  <!-- İstersen buraya kendi fotoğrafını koy: src="avatar.jpg" -->
+  <img class="sb-avatar-img" id="sbAvatarImg"
+       src="https://i.imgur.com/5ZQZ8ZB.png" alt="Zeliha kalp">
+  <div class="sb-badge">💜</div>
+</div>
+
+<script>
+(()=> {
+  const wrap = document.getElementById('sbAvatar');
+  const img  = document.getElementById('sbAvatarImg');
+  const btn  = document.querySelector('.sb-toggle');
+
+  // Başlangıç modu: takip
+  let mode = 'follow'; // 'follow' | 'repel'
+  let pos = { x: window.innerWidth - 90, y: window.innerHeight - 90 };
+  let vel = { x: 0, y: 0 };
+  let dragging = false, dragOff = {x:0,y:0};
+  let target = { x: pos.x, y: pos.y };
+
+  function setBtn(){
+    const b = btn.querySelector('b'), s = btn.querySelector('span');
+    if(mode==='follow'){ b.textContent='Takip'; s.style.opacity=.55; }
+    else { b.textContent='Kaçış'; s.style.opacity=1; }
+  }
+  setBtn();
+
+  // Fare hareketi hedefi belirler
+  window.addEventListener('mousemove', (e)=>{
+    const mx = e.clientX, my = e.clientY;
+    const dx = mx - (pos.x+45), dy = my - (pos.y+45);
+    const dist = Math.hypot(dx,dy) || 1;
+
+    if(mode==='follow'){
+      target.x = mx - 45; target.y = my - 45;
+    } else { // repel
+      const push = 120; // etkilenme yarıçapı
+      if(dist < push){
+        const k = (push - dist) / push * 18; // itiş gücü
+        target.x = pos.x - (dx/dist)*k;
+        target.y = pos.y - (dy/dist)*k;
+      } else {
+        // kenara doğru yavaşça dönsün
+        target.x += (window.innerWidth-110 - target.x)*0.002;
+        target.y += (window.innerHeight-110 - target.y)*0.002;
+      }
+    }
+    // avatar "bakış"
+    img.style.transform = `translate(${Math.max(-6,Math.min(6,dx*0.04))}px, ${Math.max(-6,Math.min(6,dy*0.04))}px)`;
+  });
+
+  // Basit fizik (yay + sürtünme)
+  function tick(){
+    const spring = 0.12, friction = 0.80;
+    vel.x += (target.x - pos.x)*spring;
+    vel.y += (target.y - pos.y)*spring;
+    vel.x *= friction; vel.y *= friction;
+    pos.x += vel.x; pos.y += vel.y;
+
+    wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Mod değiştir
+  btn.addEventListener('click',()=>{
+    mode = (mode==='follow') ? 'repel' : 'follow';
+    setBtn();
+  });
+
+  // Sürükle (dokunmatik + fare)
+  const start = (x,y)=>{ dragging=true; dragOff.x = x - pos.x; dragOff.y = y - pos.y; }
+  const move  = (x,y)=>{ if(!dragging) return; target.x = x - dragOff.x; target.y = y - dragOff.y; }
+  const end   = ()=>{ dragging=false; }
+
+  wrap.addEventListener('mousedown', e=> start(e.clientX,e.clientY));
+  window.addEventListener('mousemove', e=> move(e.clientX,e.clientY));
+  window.addEventListener('mouseup', end);
+
+  wrap.addEventListener('touchstart', e=>{
+    const t=e.touches[0]; start(t.clientX,t.clientY);
+  }, {passive:true});
+  window.addEventListener('touchmove', e=>{
+    const t=e.touches[0]; move(t.clientX,t.clientY);
+  }, {passive:true});
+  window.addEventListener('touchend', end);
+})();
+</script>
+<!-- === Avatar / Heart Widget – end === -->
 </script>
 </body>
 </html>
